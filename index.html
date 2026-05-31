@@ -1,0 +1,5522 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>지갑방범대</title>
+  <style>
+    :root {
+      --cream: #fff8ea;
+      --paper: #ffffff;
+      --sky: #dff1ff;
+      --ink: #263238;
+      --muted: #667085;
+      --line: #e7eaf0;
+      --mint: #2fa66a;
+      --mint-soft: #e7f7ee;
+      --amber: #f2994a;
+      --amber-soft: #fff2d7;
+      --red: #e74b5b;
+      --red-soft: #ffe5e9;
+      --blue: #3977d8;
+      --blue-soft: #e8f1ff;
+      --pink: #ff6b9a;
+      --shadow: 0 12px 30px rgba(62, 72, 91, 0.12);
+      --shadow-soft: 0 18px 50px rgba(31, 41, 55, 0.10);
+      --shadow-hover: 0 28px 70px rgba(31, 41, 55, 0.16);
+      --radius-card: 28px;
+      --radius-ui: 18px;
+      --radius-pill: 999px;
+      --glass-bg: rgba(255, 255, 255, 0.62);
+      --glass-border: rgba(255, 255, 255, 0.48);
+      --focus-glow: 0 0 0 5px rgba(57, 119, 216, 0.14);
+      --blob-one: rgba(98, 172, 255, 0.28);
+      --blob-two: rgba(255, 143, 179, 0.22);
+      --app-bg:
+        radial-gradient(circle at 12% 10%, rgba(255, 232, 198, 0.72), transparent 32%),
+        radial-gradient(circle at 88% 2%, rgba(208, 235, 255, 0.88), transparent 38%),
+        linear-gradient(135deg, #fff8ea 0%, #eff8ff 52%, #f8fff8 100%);
+      --topbar-bg: var(--glass-bg);
+      --card-bg: var(--glass-bg);
+      --chip-bg: rgba(255, 255, 255, 0.58);
+      --input-bg: rgba(255, 255, 255, 0.76);
+      --subtle-bg: rgba(246, 249, 253, 0.72);
+      --track-bg: rgba(226, 232, 240, 0.74);
+      --ghost-bg: rgba(255, 255, 255, 0.58);
+      --overlay-bg:
+        radial-gradient(circle at 15% 10%, rgba(255, 232, 198, 0.78), transparent 34%),
+        radial-gradient(circle at 88% 8%, rgba(212, 239, 255, 0.94), transparent 42%),
+        linear-gradient(135deg, rgba(255, 248, 234, 0.98), rgba(237, 247, 255, 0.96));
+    }
+
+    body[data-theme="dark"] {
+      --cream: #101923;
+      --paper: #17212d;
+      --sky: #17324b;
+      --ink: #ecf2f8;
+      --muted: #a8b3c2;
+      --line: #2b3a49;
+      --mint: #5bd49a;
+      --mint-soft: #17382d;
+      --amber: #ffb45c;
+      --amber-soft: #3c2d16;
+      --red: #ff6b78;
+      --red-soft: #41212a;
+      --blue: #6da8ff;
+      --blue-soft: #1c3352;
+      --pink: #ff8fb3;
+      --shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+      --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.26);
+      --shadow-hover: 0 28px 70px rgba(0, 0, 0, 0.36);
+      --glass-bg: rgba(20, 30, 44, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.10);
+      --focus-glow: 0 0 0 5px rgba(109, 168, 255, 0.20);
+      --blob-one: rgba(65, 132, 255, 0.20);
+      --blob-two: rgba(91, 212, 154, 0.14);
+      --app-bg:
+        radial-gradient(circle at 14% 10%, rgba(39, 76, 122, 0.42), transparent 34%),
+        radial-gradient(circle at 90% 0%, rgba(17, 49, 85, 0.74), transparent 42%),
+        linear-gradient(135deg, #0c121c 0%, #111c29 48%, #152333 100%);
+      --topbar-bg: var(--glass-bg);
+      --card-bg: var(--glass-bg);
+      --chip-bg: rgba(24, 35, 50, 0.72);
+      --input-bg: rgba(28, 41, 56, 0.74);
+      --subtle-bg: rgba(30, 44, 60, 0.72);
+      --track-bg: rgba(58, 74, 94, 0.72);
+      --ghost-bg: rgba(29, 42, 56, 0.64);
+      --overlay-bg:
+        radial-gradient(circle at 15% 10%, rgba(39, 76, 122, 0.50), transparent 38%),
+        radial-gradient(circle at 86% 8%, rgba(18, 55, 94, 0.72), transparent 44%),
+        linear-gradient(135deg, rgba(13, 22, 32, 0.99), rgba(20, 34, 48, 0.98));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--app-bg);
+      letter-spacing: 0;
+      transition: background 0.25s ease, color 0.25s ease;
+      isolation: isolate;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      width: min(44vw, 560px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(46px);
+      opacity: 0.9;
+      animation: blobMove 10s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: -160px;
+      left: -120px;
+      background: radial-gradient(circle, var(--blob-one), transparent 68%);
+    }
+
+    body::after {
+      right: -140px;
+      bottom: -180px;
+      background: radial-gradient(circle, var(--blob-two), transparent 68%);
+      animation-duration: 12s;
+      animation-delay: -2s;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 32px 0 52px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(57, 119, 216, 0.14);
+      border-radius: var(--radius-card);
+      background: var(--topbar-bg);
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      line-height: 1.04;
+    }
+
+    .subtitle {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 1.03rem;
+      line-height: 1.55;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 220px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(57, 119, 216, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(57, 119, 216, 0.26);
+    }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: var(--amber-soft);
+      box-shadow: none;
+    }
+
+    .btn.ghost {
+      color: var(--ink);
+      background: var(--ghost-bg);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: var(--red);
+      box-shadow: 0 8px 18px rgba(231, 75, 91, 0.2);
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 18px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .profile-insights {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .profile-chip {
+      min-height: 64px;
+      padding: 12px;
+      border: 1px solid rgba(57, 119, 216, 0.12);
+      border-radius: var(--radius-card);
+      background: var(--chip-bg);
+      box-shadow: 0 8px 20px rgba(62, 72, 91, 0.08);
+    }
+
+    .profile-chip span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 900;
+    }
+
+    .profile-chip strong {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    .profile-chip small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .card {
+      border: 1px solid rgba(38, 50, 56, 0.08);
+      border-radius: var(--radius-card);
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+    }
+
+    .metric-card {
+      min-height: 142px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .metric-grid,
+    .profile-insights {
+      position: relative;
+    }
+
+    .metric-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    .metric-value {
+      overflow-wrap: anywhere;
+      font-size: clamp(1.25rem, 2.2vw, 1.72rem);
+      font-weight: 900;
+      line-height: 1.16;
+    }
+
+    .metric-note {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.35fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .section-card {
+      padding: 18px;
+    }
+
+    .section-card h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-size: 1.14rem;
+      line-height: 1.3;
+    }
+
+    .section-card h3 {
+      margin: 18px 0 10px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 800;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-ui);
+      color: var(--ink);
+      background: var(--input-bg);
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(57, 119, 216, 0.12);
+    }
+
+    input[type="file"] {
+      padding: 9px 12px;
+      background: var(--blue-soft);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .simulation-result {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: var(--radius-card);
+      border: 1px dashed var(--line);
+      background: var(--subtle-bg);
+    }
+
+    .simulation-result.hidden,
+    .hidden {
+      display: none !important;
+    }
+
+    .message-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .message-list li {
+      padding: 9px 10px;
+      border-radius: var(--radius-card);
+      background: var(--blue-soft);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .upload-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .progress-block {
+      display: grid;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .progress-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 16px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--track-bg);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--mint);
+      transition: width 0.35s ease, background 0.35s ease;
+    }
+
+    .chart {
+      display: grid;
+      gap: 11px;
+      margin-top: 10px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 92px minmax(130px, 1fr) 92px;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .bar-name {
+      font-weight: 800;
+    }
+
+    .bar-track {
+      height: 18px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--track-bg);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #72d29a, #58aaf7);
+      transition: width 0.35s ease;
+    }
+
+    .bar-value {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-align: right;
+    }
+
+    .report-list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .report-list li {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--ghost-bg);
+      line-height: 1.45;
+    }
+
+    .table-card {
+      padding: 18px;
+    }
+
+    .table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .table-head h2 {
+      margin-bottom: 0;
+      font-size: 1.14rem;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--ghost-bg);
+    }
+
+    table {
+      width: 100%;
+      min-width: 880px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 0.9rem;
+    }
+
+    th {
+      color: var(--muted);
+      background: var(--subtle-bg);
+      font-size: 0.8rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td.amount {
+      font-weight: 900;
+      color: var(--blue);
+      white-space: nowrap;
+    }
+
+    .description-cell {
+      max-width: 260px;
+      min-width: 190px;
+      overflow-wrap: anywhere;
+      font-weight: 750;
+    }
+
+    .small-select {
+      min-height: 38px;
+      padding: 7px 10px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-height: 26px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .badge.safe {
+      color: #12633e;
+      background: var(--mint-soft);
+    }
+
+    .badge.caution {
+      color: #8c4a08;
+      background: var(--amber-soft);
+    }
+
+    .badge.danger {
+      color: #9c1c2a;
+      background: var(--red-soft);
+    }
+
+    .badge.review {
+      color: var(--pink);
+      background: var(--blue-soft);
+    }
+
+    body[data-theme="dark"] .badge.safe {
+      color: #9af0bd;
+    }
+
+    body[data-theme="dark"] .badge.caution {
+      color: #ffd08a;
+    }
+
+    body[data-theme="dark"] .badge.danger {
+      color: #ffb1ba;
+    }
+
+    .warning-cell {
+      min-width: 220px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .warning-cell .badge {
+      margin-right: 6px;
+      margin-bottom: 4px;
+    }
+
+    .empty-state {
+      padding: 34px 16px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .onboarding-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--overlay-bg);
+      backdrop-filter: blur(6px);
+      overflow-y: auto;
+    }
+
+    .onboarding-overlay.active {
+      display: flex;
+      animation: fadeIn 0.24s ease both;
+    }
+
+    .onboarding-overlay.is-wizard-open {
+      align-items: flex-start;
+    }
+
+    .onboarding-shell {
+      width: min(980px, 100%);
+      display: grid;
+      gap: 16px;
+    }
+
+    .onboarding-card {
+      overflow: hidden;
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(57, 119, 216, 0.16);
+      background: var(--card-bg);
+      box-shadow: 0 26px 80px rgba(48, 62, 85, 0.22);
+      animation: slideUp 0.32s ease both;
+    }
+
+    .onboarding-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+      gap: 18px;
+      padding: clamp(22px, 5vw, 40px);
+      min-height: min(690px, calc(100vh - 80px));
+      align-items: center;
+    }
+
+    .onboarding-control-bar {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: auto minmax(220px, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.34);
+      box-shadow: 0 14px 34px rgba(48, 62, 85, 0.10);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      animation: fadeUp 0.46s ease both;
+    }
+
+    body[data-theme="dark"] .onboarding-control-bar {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .onboarding-logo-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: var(--radius-pill);
+      color: var(--ink);
+      background: var(--ghost-bg);
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .onboarding-status-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 0 16px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      color: var(--muted);
+      background: var(--input-bg);
+      font-weight: 850;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .onboarding-status-box::before {
+      content: "🔎";
+      flex: 0 0 auto;
+    }
+
+    .onboarding-theme-toggle {
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: var(--radius-pill);
+      color: var(--ink);
+      background: var(--ghost-bg);
+      border: 1px solid var(--glass-border);
+      font-weight: 900;
+      white-space: nowrap;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .onboarding-theme-toggle:hover {
+      transform: translateY(-1px);
+    }
+
+    .onboarding-copy h2,
+    .wizard-head h2 {
+      margin-bottom: 8px;
+      font-size: clamp(1.35rem, 4vw, 2rem);
+      line-height: 1.25;
+    }
+
+    .onboarding-copy p,
+    .wizard-head p,
+    .step-description {
+      margin-bottom: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .privacy-note {
+      padding: 12px 14px;
+      margin: 18px 0;
+      border-radius: var(--radius-card);
+      color: var(--ink);
+      background: var(--blue-soft);
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .onboarding-tabs {
+      display: inline-flex;
+      gap: 8px;
+      padding: 5px;
+      margin-bottom: 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--ghost-bg);
+    }
+
+    .tab-pill {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 900;
+    }
+
+    .tab-pill.active {
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .tab-pill:disabled {
+      color: var(--muted);
+      background: var(--subtle-bg);
+    }
+
+    .onboarding-visual {
+      display: grid;
+      gap: 12px;
+      align-content: center;
+    }
+
+    .preview-card {
+      padding: 18px;
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(38, 50, 56, 0.08);
+      background: var(--ghost-bg);
+      box-shadow: 0 16px 36px rgba(62, 72, 91, 0.13);
+    }
+
+    .preview-card:nth-child(2) {
+      transform: translateX(18px);
+    }
+
+    .preview-card:nth-child(3) {
+      transform: translateX(-12px);
+    }
+
+    .preview-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .preview-amount {
+      font-size: 1.35rem;
+      font-weight: 950;
+    }
+
+    .continue-panel {
+      display: none;
+      padding: 12px 14px;
+      margin: 12px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--ghost-bg);
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .continue-panel.active {
+      display: block;
+      animation: fadeSlide 0.24s ease both;
+    }
+
+    .wizard-card {
+      padding: clamp(18px, 4vw, 32px);
+    }
+
+    .wizard-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .wizard-count {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--blue-soft);
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .wizard-head-actions {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .wizard-theme-toggle {
+      width: 50px;
+      height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--ghost-bg);
+      box-shadow: 0 12px 26px rgba(57, 119, 216, 0.12);
+      font-size: 1.18rem;
+      line-height: 1;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .wizard-theme-toggle:hover {
+      transform: translateY(-2px) rotate(-7deg) scale(1.04);
+      box-shadow: var(--shadow-hover);
+      background: var(--blue-soft);
+    }
+
+    .wizard-theme-toggle:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-hover), var(--focus-glow);
+    }
+
+    .wizard-progress {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--track-bg);
+      margin-bottom: 22px;
+    }
+
+    .wizard-progress-fill {
+      width: 20%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ff8fb3, #58aaf7);
+      transition: width 0.28s ease;
+    }
+
+    .wizard-carousel {
+      display: grid;
+      grid-template-columns: minmax(170px, 220px) minmax(0, 1fr) minmax(170px, 220px);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .step-current-card {
+      min-width: 0;
+      padding: clamp(14px, 2.4vw, 22px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      background: rgba(255, 255, 255, 0.22);
+      overflow: hidden;
+      box-shadow: 0 18px 42px rgba(48, 62, 85, 0.12);
+    }
+
+    body[data-theme="dark"] .step-current-card {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .step-preview-card {
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      min-height: 170px;
+      padding: 18px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.16);
+      text-align: left;
+      box-shadow: 0 14px 34px rgba(48, 62, 85, 0.09);
+      opacity: 0.68;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transition: transform 0.24s ease, box-shadow 0.24s ease, opacity 0.24s ease, background 0.24s ease, border-color 0.24s ease;
+    }
+
+    body[data-theme="dark"] .step-preview-card {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .step-preview-card:hover:not(:disabled) {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .step-preview-card:disabled {
+      cursor: default;
+      opacity: 0.72;
+    }
+
+    .step-preview-card .preview-kicker {
+      color: var(--blue);
+      font-size: 0.74rem;
+      font-weight: 950;
+    }
+
+    .step-preview-card strong {
+      display: block;
+      font-size: 0.98rem;
+      line-height: 1.32;
+    }
+
+    .step-preview-card small {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .step-preview-left {
+      transform: rotate(-1.5deg);
+    }
+
+    .step-preview-right {
+      transform: rotate(1.5deg);
+    }
+
+    .step-preview-card::after {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 850;
+      opacity: 0.92;
+    }
+
+    .step-preview-left::after {
+      content: "눌러서 이전 설정 보기";
+    }
+
+    .step-preview-right::after {
+      content: "눌러서 다음 설정 보기";
+    }
+
+    .step-preview-card:hover:not(:disabled) {
+      opacity: 1;
+      background: var(--glass-bg);
+      border-color: rgba(109, 168, 255, 0.44);
+    }
+
+    .step-preview-card:disabled {
+      cursor: default;
+      opacity: 0.46;
+      filter: saturate(0.8);
+    }
+
+    .wizard-carousel.is-animating-next .step-current-card {
+      animation: wizardCardSlideNext 0.34s ease both;
+    }
+
+    .wizard-carousel.is-animating-prev .step-current-card {
+      animation: wizardCardSlidePrev 0.34s ease both;
+    }
+
+    .fixed-expense-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      background: linear-gradient(135deg, rgba(57, 119, 216, 0.18), rgba(91, 212, 154, 0.12));
+    }
+
+    .fixed-expense-summary span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .fixed-expense-summary strong {
+      font-size: clamp(1.45rem, 4vw, 2.25rem);
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .fixed-expense-option-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .fixed-expense-button {
+      min-height: 86px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-ui);
+      color: var(--ink);
+      background: var(--ghost-bg);
+      text-align: left;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .fixed-expense-button:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .fixed-expense-button.is-selected {
+      border-color: var(--blue);
+      background: linear-gradient(135deg, rgba(57, 119, 216, 0.18), rgba(91, 212, 154, 0.14));
+      box-shadow: 0 12px 28px rgba(57, 119, 216, 0.14);
+    }
+
+    .fixed-expense-button strong,
+    .fixed-expense-button span {
+      display: block;
+    }
+
+    .fixed-expense-button strong {
+      margin-bottom: 7px;
+      font-size: 1rem;
+    }
+
+    .fixed-expense-button span {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .fixed-expense-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 34px;
+      margin-top: 8px;
+    }
+
+    .fixed-expense-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border-radius: var(--radius-pill);
+      color: var(--ink);
+      background: var(--blue-soft);
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    .fixed-expense-chip button {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.45);
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .wizard-step {
+      display: none;
+    }
+
+    .wizard-step.active {
+      display: block;
+      animation: fadeSlide 0.26s ease both;
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .option-choice {
+      position: relative;
+      display: block;
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .option-choice input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      min-height: 1px;
+    }
+
+    .option-body {
+      display: flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--ghost-bg);
+      transition: transform 0.18s ease, border 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .option-choice input:checked + .option-body {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      box-shadow: 0 8px 20px rgba(57, 119, 216, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .subscription-price-info {
+      padding: 13px 15px;
+      border: 1px dashed var(--glass-border);
+      border-radius: var(--radius-ui);
+      background: var(--blue-soft);
+      color: var(--ink);
+    }
+
+    .subscription-price-info span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .subscription-price-info strong {
+      display: block;
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .wizard-actions .btn {
+      min-width: 140px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatCard {
+      from { opacity: 0; transform: translateY(24px) scale(0.96) rotate(var(--tilt, 0deg)); }
+      to { opacity: 1; transform: translateY(0) rotate(var(--tilt, 0deg)); }
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0.18; transform: translateY(22px) scale(0.96) rotate(var(--tilt, 0deg)); }
+      to { opacity: 0.62; transform: translateY(0) scale(1) rotate(var(--tilt, 0deg)); }
+    }
+
+    @keyframes blobMove {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(34px, 22px, 0) scale(1.08); }
+    }
+
+    @keyframes softPulse {
+      0%, 100% { box-shadow: 0 14px 30px rgba(57, 119, 216, 0.18); }
+      50% { box-shadow: 0 18px 46px rgba(57, 119, 216, 0.28); }
+    }
+
+    @keyframes softGlow {
+      0%, 100% { box-shadow: 0 14px 34px rgba(57, 119, 216, 0.10); }
+      50% { box-shadow: 0 18px 44px rgba(91, 212, 154, 0.18); }
+    }
+
+    .soft-gradient-text {
+      background: linear-gradient(90deg, var(--blue), var(--mint));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .interactive-lift,
+    .card,
+    .metric-card,
+    .profile-chip,
+    .preview-card {
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+
+    .card:hover,
+    .metric-card:hover,
+    .profile-chip:hover,
+    .preview-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .glass-card,
+    .topbar,
+    .card,
+    .profile-chip,
+    .onboarding-card,
+    .preview-card,
+    .table-wrapper {
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .topbar {
+      padding: 26px;
+      border-radius: calc(var(--radius-card) + 4px);
+    }
+
+    .topbar h1 {
+      margin-bottom: 10px;
+      letter-spacing: 0;
+    }
+
+    .top-actions {
+      align-items: center;
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--blue), #58aaf7);
+      font-weight: 850;
+      letter-spacing: 0;
+      box-shadow: 0 14px 30px rgba(57, 119, 216, 0.18);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, rgba(255, 242, 215, 0.92), rgba(232, 241, 255, 0.82));
+      border: 1px solid var(--glass-border);
+      color: var(--ink);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+    }
+
+    body[data-theme="dark"] .btn.ghost {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .btn.danger {
+      background: linear-gradient(135deg, #ff7d8a, var(--red));
+      box-shadow: 0 14px 30px rgba(231, 75, 91, 0.18);
+    }
+
+    #startOnboardingBtn:hover {
+      animation: softPulse 1.8s ease-in-out infinite;
+    }
+
+    input,
+    select {
+      min-height: 48px;
+      padding: 12px 15px;
+      border-radius: var(--radius-ui);
+      background: var(--input-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    input::placeholder {
+      color: color-mix(in srgb, var(--muted) 68%, transparent);
+    }
+
+    input:focus,
+    select:focus {
+      box-shadow: var(--focus-glow);
+    }
+
+    .field {
+      gap: 9px;
+    }
+
+    .card,
+    .section-card,
+    .table-card,
+    .metric-card,
+    .profile-chip {
+      border-radius: var(--radius-card);
+    }
+
+    .section-card,
+    .table-card {
+      padding: 24px;
+    }
+
+    .metric-card {
+      position: relative;
+      min-height: 158px;
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .metric-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -24px -38px auto;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(88, 170, 247, 0.16), transparent 70%);
+      pointer-events: none;
+    }
+
+    .metric-title {
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .metric-title::before {
+      content: "";
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(57, 119, 216, 0.16), rgba(91, 212, 154, 0.16));
+      border: 1px solid var(--glass-border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .metric-value {
+      font-size: clamp(1.45rem, 2.55vw, 2.05rem);
+      letter-spacing: 0;
+    }
+
+    .metric-note {
+      margin-top: 6px;
+      font-size: 0.78rem;
+    }
+
+    .metric-card:has(#riskStatusBadge.safe) {
+      background: linear-gradient(135deg, var(--glass-bg), rgba(47, 166, 106, 0.10));
+    }
+
+    .metric-card:has(#riskStatusBadge.caution) {
+      background: linear-gradient(135deg, var(--glass-bg), rgba(242, 153, 74, 0.13));
+    }
+
+    .metric-card:has(#riskStatusBadge.danger) {
+      background: linear-gradient(135deg, var(--glass-bg), rgba(231, 75, 91, 0.13));
+    }
+
+    .profile-insights {
+      gap: 14px;
+    }
+
+    .profile-chip {
+      position: relative;
+      min-height: 82px;
+      padding: 16px 16px 16px 18px;
+      overflow: hidden;
+    }
+
+    .profile-chip::before {
+      content: "";
+      display: block;
+      width: 8px;
+      height: 8px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--mint));
+      box-shadow: 0 0 0 5px rgba(57, 119, 216, 0.08);
+    }
+
+    .profile-chip strong {
+      font-size: 0.98rem;
+    }
+
+    .metric-grid,
+    .profile-insights {
+      grid-template-columns: minmax(130px, 0.48fr) minmax(320px, 1fr) minmax(130px, 0.48fr);
+      align-items: stretch;
+      min-height: 244px;
+      overflow: hidden;
+      perspective: 1200px;
+    }
+
+    .profile-insights {
+      min-height: 176px;
+    }
+
+    .metric-grid .metric-card,
+    .profile-insights .profile-chip {
+      grid-row: 1;
+      min-width: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px) scale(0.82);
+      transition: opacity 0.32s ease, transform 0.32s ease, box-shadow 0.32s ease, background 0.32s ease, border-color 0.32s ease, filter 0.32s ease;
+    }
+
+    .metric-grid .metric-card.is-active,
+    .profile-insights .profile-chip.is-active {
+      grid-column: 2;
+      z-index: 3;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+      cursor: default;
+    }
+
+    .metric-grid .metric-card.is-prev,
+    .profile-insights .profile-chip.is-prev {
+      grid-column: 1;
+      z-index: 2;
+      opacity: 0.36;
+      pointer-events: auto;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(12%) rotateY(12deg) scale(0.88);
+      filter: saturate(0.8);
+    }
+
+    .metric-grid .metric-card.is-next,
+    .profile-insights .profile-chip.is-next {
+      grid-column: 3;
+      z-index: 2;
+      opacity: 0.36;
+      pointer-events: auto;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(-12%) rotateY(-12deg) scale(0.88);
+      filter: saturate(0.8);
+    }
+
+    body[data-theme="dark"] .metric-grid .metric-card.is-prev,
+    body[data-theme="dark"] .metric-grid .metric-card.is-next,
+    body[data-theme="dark"] .profile-insights .profile-chip.is-prev,
+    body[data-theme="dark"] .profile-insights .profile-chip.is-next {
+      background: rgba(255, 255, 255, 0.035);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .metric-grid .metric-card.is-prev:hover,
+    .metric-grid .metric-card.is-next:hover,
+    .profile-insights .profile-chip.is-prev:hover,
+    .profile-insights .profile-chip.is-next:hover {
+      opacity: 0.96;
+      background: var(--glass-bg);
+      box-shadow: var(--shadow-hover);
+      filter: saturate(1);
+    }
+
+    .metric-grid .metric-card:focus-visible,
+    .profile-insights .profile-chip:focus-visible,
+    .step-preview-card:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-hover), var(--focus-glow);
+    }
+
+    .metric-grid .metric-card.is-prev:hover,
+    .profile-insights .profile-chip.is-prev:hover {
+      transform: translateX(4%) rotateY(5deg) scale(0.96);
+    }
+
+    .metric-grid .metric-card.is-next:hover,
+    .profile-insights .profile-chip.is-next:hover {
+      transform: translateX(-4%) rotateY(-5deg) scale(0.96);
+    }
+
+    .metric-grid .metric-card.is-hidden,
+    .profile-insights .profile-chip.is-hidden {
+      display: none;
+    }
+
+    .metric-grid.carousel-slide-next .metric-card.is-active,
+    .profile-insights.carousel-slide-next .profile-chip.is-active {
+      animation: carouselActiveFromRight 0.36s ease both;
+    }
+
+    .metric-grid.carousel-slide-next .metric-card.is-prev,
+    .profile-insights.carousel-slide-next .profile-chip.is-prev {
+      animation: carouselCenterToLeft 0.36s ease both;
+    }
+
+    .metric-grid.carousel-slide-prev .metric-card.is-active,
+    .profile-insights.carousel-slide-prev .profile-chip.is-active {
+      animation: carouselActiveFromLeft 0.36s ease both;
+    }
+
+    .metric-grid.carousel-slide-prev .metric-card.is-next,
+    .profile-insights.carousel-slide-prev .profile-chip.is-next {
+      animation: carouselCenterToRight 0.36s ease both;
+    }
+
+    @keyframes carouselActiveFromRight {
+      from { opacity: 0.36; transform: translateX(18%) rotateY(-12deg) scale(0.88); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes carouselActiveFromLeft {
+      from { opacity: 0.36; transform: translateX(-18%) rotateY(12deg) scale(0.88); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes carouselCenterToLeft {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0.36; transform: translateX(12%) rotateY(12deg) scale(0.88); }
+    }
+
+    @keyframes carouselCenterToRight {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0.36; transform: translateX(-12%) rotateY(-12deg) scale(0.88); }
+    }
+
+    .onboarding-overlay {
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .onboarding-card {
+      border-radius: 34px;
+    }
+
+    .onboarding-hero {
+      gap: clamp(18px, 5vw, 44px);
+      padding: clamp(24px, 6vw, 54px);
+    }
+
+    .onboarding-copy {
+      animation: fadeUp 0.55s ease both;
+    }
+
+    .onboarding-copy h2 {
+      font-size: clamp(2.35rem, 6vw, 4.7rem);
+      letter-spacing: 0;
+    }
+
+    .hero-preview-stack {
+      position: relative;
+      display: grid;
+      gap: 0;
+      min-height: 440px;
+      align-content: center;
+      perspective: 1000px;
+    }
+
+    .hero-preview-stack .preview-card {
+      --tilt: 0deg;
+      width: min(360px, 100%);
+      padding: 22px;
+      margin: -8px 0;
+      border-radius: 28px;
+      opacity: 0.62;
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.18);
+      animation: floatIn 0.64s ease both;
+      transform-origin: center;
+    }
+
+    body[data-theme="dark"] .hero-preview-stack .preview-card {
+      background: rgba(255, 255, 255, 0.025);
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .hero-preview-stack .preview-card:nth-child(1) {
+      --tilt: -3deg;
+      justify-self: start;
+      animation-delay: 0.06s;
+    }
+
+    .hero-preview-stack .preview-card:nth-child(2) {
+      --tilt: 2deg;
+      justify-self: end;
+      animation-delay: 0.14s;
+    }
+
+    .hero-preview-stack .preview-card:nth-child(3) {
+      --tilt: -1.5deg;
+      justify-self: center;
+      animation-delay: 0.22s;
+    }
+
+    .hero-preview-stack .preview-card:nth-child(4) {
+      --tilt: 3deg;
+      justify-self: start;
+      animation-delay: 0.30s;
+    }
+
+    .hero-preview-stack .preview-card:hover {
+      z-index: 5;
+      opacity: 1;
+      background: var(--glass-bg);
+      border-color: var(--glass-border);
+      animation: previewHoverPop 0.42s ease both;
+      transform: translateY(-12px) rotate(calc(var(--tilt) * 1.2)) scale(1.08);
+    }
+
+    .preview-title {
+      font-size: 0.84rem;
+    }
+
+    .preview-amount {
+      font-size: clamp(1.65rem, 4vw, 2.45rem);
+      letter-spacing: 0;
+    }
+
+    @keyframes previewHoverPop {
+      0% { transform: translateY(0) rotate(var(--tilt, 0deg)) scale(1); }
+      55% { transform: translateY(-16px) rotate(calc(var(--tilt, 0deg) * 1.25)) scale(1.1); }
+      100% { transform: translateY(-12px) rotate(calc(var(--tilt, 0deg) * 1.2)) scale(1.08); }
+    }
+
+    @keyframes wizardCardSlideNext {
+      from { opacity: 0.42; transform: translateX(34px) scale(0.98); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    @keyframes wizardCardSlidePrev {
+      from { opacity: 0.42; transform: translateX(-34px) scale(0.98); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .wizard-card {
+      border-radius: 34px;
+    }
+
+    .wizard-progress,
+    .progress-track,
+    .bar-track {
+      overflow: hidden;
+      border-radius: var(--radius-pill);
+    }
+
+    .wizard-progress-fill,
+    .progress-fill {
+      background: linear-gradient(90deg, var(--blue), #58aaf7, var(--mint));
+    }
+
+    .option-body {
+      min-height: 50px;
+      padding: 12px 16px;
+      border-radius: var(--radius-pill);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .option-choice input:checked + .option-body {
+      background: linear-gradient(135deg, rgba(57, 119, 216, 0.16), rgba(91, 212, 154, 0.14));
+      box-shadow: 0 12px 28px rgba(57, 119, 216, 0.14);
+    }
+
+    .report-list li,
+    .message-list li,
+    .simulation-result {
+      border-radius: 18px;
+    }
+
+    .table-wrapper {
+      border-radius: 24px;
+    }
+
+    th {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    tbody tr {
+      transition: background 0.18s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(57, 119, 216, 0.06);
+    }
+
+    .small-select {
+      min-height: 40px;
+      border-radius: var(--radius-pill);
+      background: var(--input-bg);
+    }
+
+    td .btn {
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 0.82rem;
+    }
+
+    .badge {
+      min-height: 28px;
+      padding: 5px 10px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0;
+    }
+
+    .bar-row {
+      padding: 8px;
+      border-radius: 16px;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+
+    .bar-row:hover {
+      background: rgba(57, 119, 216, 0.07);
+      transform: translateX(2px);
+    }
+
+    .bar-fill {
+      animation: growBar 0.55s ease both;
+      background: linear-gradient(90deg, var(--mint), #58aaf7);
+    }
+
+    @keyframes growBar {
+      from { transform: scaleX(0); transform-origin: left; }
+      to { transform: scaleX(1); transform-origin: left; }
+    }
+
+
+    .danger-alarm {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(231, 75, 91, 0.16);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      pointer-events: none;
+    }
+
+    .danger-alarm.show {
+      display: flex;
+      animation: alarmBackdrop 0.68s ease both;
+    }
+
+    .danger-alarm-card {
+      width: min(420px, 100%);
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 32px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(231, 75, 91, 0.94), rgba(255, 125, 138, 0.92));
+      box-shadow: 0 28px 80px rgba(231, 75, 91, 0.34);
+      text-align: center;
+      animation: alarmPop 0.72s cubic-bezier(.2, 1.4, .4, 1) both;
+    }
+
+    .danger-alarm-card strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 1.3rem;
+      font-weight: 950;
+    }
+
+    .danger-alarm-card span {
+      display: block;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    @keyframes alarmBackdrop {
+      0%, 100% { opacity: 0; }
+      18%, 82% { opacity: 1; }
+    }
+
+    @keyframes alarmPop {
+      0% { opacity: 0; transform: translateY(18px) scale(0.86) rotate(-2deg); }
+      28% { opacity: 1; transform: translateY(0) scale(1.06) rotate(1deg); }
+      48% { transform: scale(0.98) rotate(-0.5deg); }
+      100% { opacity: 0; transform: translateY(-8px) scale(1.02); }
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      max-width: min(420px, calc(100% - 36px));
+      padding: 12px 14px;
+      border-radius: var(--radius-card);
+      color: #fff;
+      background: #263238;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity 0.24s ease, transform 0.24s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+
+    .service-line {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+      border-radius: calc(var(--radius-card) + 2px);
+      overflow: hidden;
+    }
+
+    .service-line-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .service-line-head h2 {
+      margin: 0 0 6px;
+      font-size: clamp(1.15rem, 2.2vw, 1.55rem);
+      letter-spacing: -0.01em;
+    }
+
+    .service-line-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .service-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      background: var(--ghost-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .service-nav-btn {
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      color: var(--ink);
+      background: var(--input-bg);
+      box-shadow: 0 10px 22px rgba(48, 62, 85, 0.08);
+      font-weight: 950;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .service-nav-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: var(--shadow-hover);
+      background: var(--blue-soft);
+    }
+
+    .service-nav-btn:disabled {
+      opacity: 0.42;
+    }
+
+    .service-slide-indicator {
+      min-width: 62px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .service-viewport {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-card);
+    }
+
+    .service-grid {
+      --service-index: 0;
+      display: flex;
+      gap: 14px;
+      align-items: stretch;
+      transform: translateX(calc(var(--service-index) * -1 * (100% + 14px)));
+      transition: transform 0.36s cubic-bezier(.2,.8,.2,1);
+      will-change: transform;
+    }
+
+    .service-card {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(280px, 1.15fr);
+      gap: 16px;
+      align-items: start;
+      flex: 0 0 100%;
+      min-height: 260px;
+      padding: clamp(16px, 2.2vw, 24px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.16));
+      box-shadow: 0 12px 28px rgba(48, 62, 85, 0.08);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+    }
+
+    body[data-theme="dark"] .service-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.035));
+    }
+
+    .service-card:hover {
+      box-shadow: var(--shadow-hover);
+      background: var(--glass-bg);
+    }
+
+    .service-card-wide {
+      grid-column: auto;
+    }
+
+    .service-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 1.08rem;
+      letter-spacing: -0.01em;
+    }
+
+    .service-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.48;
+    }
+
+    .service-card h3,
+    .service-card p {
+      grid-column: 1;
+    }
+
+    .service-card .form-grid,
+    .service-card .service-result {
+      grid-column: 2;
+    }
+
+    .service-card .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .service-result {
+      display: grid;
+      gap: 8px;
+      padding: 14px;
+      border: 1px dashed var(--glass-border);
+      border-radius: var(--radius-ui);
+      background: var(--subtle-bg);
+      color: var(--ink);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .service-result strong {
+      font-weight: 950;
+    }
+
+    .service-result ul {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .service-progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      min-height: 10px;
+    }
+
+    .service-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--track-bg);
+      transition: width 0.2s ease, background 0.2s ease;
+    }
+
+    .service-dot.active {
+      width: 24px;
+      background: var(--blue);
+    }
+
+    @media (max-width: 1080px) {
+      .metric-grid {
+        grid-template-columns: minmax(96px, 0.42fr) minmax(260px, 1fr) minmax(96px, 0.42fr);
+      }
+
+      .profile-insights {
+        grid-template-columns: minmax(90px, 0.42fr) minmax(260px, 1fr) minmax(90px, 0.42fr);
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .service-card {
+        grid-template-columns: 1fr;
+      }
+
+      .service-card h3,
+      .service-card p,
+      .service-card .form-grid,
+      .service-card .service-result {
+        grid-column: 1;
+      }
+
+      .onboarding-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .onboarding-control-bar {
+        grid-template-columns: 1fr;
+        border-radius: var(--radius-card);
+      }
+
+      .onboarding-logo-mark,
+      .onboarding-status-box,
+      .onboarding-theme-toggle {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .wizard-carousel {
+        grid-template-columns: minmax(120px, 170px) minmax(0, 1fr) minmax(120px, 170px);
+      }
+
+      .step-preview-card {
+        min-height: 132px;
+        padding: 14px;
+      }
+
+      .fixed-expense-option-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 18px;
+      }
+
+      .top-actions {
+        min-width: 0;
+        justify-content: flex-start;
+      }
+
+      .form-grid,
+      .option-grid,
+      .service-line {
+        padding: 14px;
+      }
+
+      .service-line-head {
+        align-items: stretch;
+      }
+
+      .service-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .service-card {
+        min-height: auto;
+      }
+
+      .service-card .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid,
+      .profile-insights {
+        grid-template-columns: 64px minmax(0, 1fr) 64px;
+        gap: 8px;
+      }
+
+      .metric-card {
+        min-height: 176px;
+      }
+
+      .profile-insights {
+        min-height: 150px;
+      }
+
+      .metric-grid .metric-card.is-prev,
+      .profile-insights .profile-chip.is-prev {
+        transform: translateX(18%) rotateY(10deg) scale(0.78);
+      }
+
+      .metric-grid .metric-card.is-next,
+      .profile-insights .profile-chip.is-next {
+        transform: translateX(-18%) rotateY(-10deg) scale(0.78);
+      }
+
+      .section-card,
+      .table-card,
+      .wizard-card {
+        padding: 15px;
+      }
+
+      .onboarding-overlay {
+        padding: 10px;
+        align-items: flex-start;
+      }
+
+      .onboarding-hero {
+        min-height: auto;
+        padding: 18px;
+      }
+
+      .hero-preview-stack {
+        min-height: auto;
+        gap: 10px;
+      }
+
+      .hero-preview-stack .preview-card {
+        width: 100%;
+        margin: 0;
+        justify-self: stretch !important;
+      }
+
+      .onboarding-tabs {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        border-radius: var(--radius-card);
+      }
+
+      .wizard-carousel {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .step-preview-card {
+        display: none;
+      }
+
+      .fixed-expense-summary {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .fixed-expense-option-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wizard-head,
+      .wizard-actions {
+        flex-direction: column;
+      }
+
+      .wizard-head-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .bar-row {
+        grid-template-columns: 74px 1fr;
+      }
+
+      .bar-value {
+        grid-column: 2;
+        text-align: left;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .button-row .btn,
+      .top-actions .btn {
+        flex: 1 1 180px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">대학생 소비 패턴 분석</p>
+        <h1>지갑방범대 🕵️‍♀️💸</h1>
+        <p class="subtitle">거래내역을 분석해 월 지출 한도, 고정 지출, 반복 소비 위험 신호를 잡아주는 귀여운 지출 관리 앱</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn ghost" id="themeToggleBtn" type="button">🌙 다크모드</button>
+        <button class="btn secondary" id="editProfileBtn" type="button">✏️ 내 정보 수정</button>
+        <button class="btn ghost" id="resetSettingsBtn" type="button">🧹 설정 초기화</button>
+      </div>
+    </header>
+
+    <main class="dashboard" id="dashboard">
+      <section class="metric-grid" id="metricGrid" aria-label="대시보드 요약">
+        <article class="card metric-card">
+          <div class="metric-title">💳 이번 달 총 지출</div>
+          <div>
+            <div class="metric-value" id="totalSpentValue">0원</div>
+            <div class="metric-note" id="transactionCountNote">거래 0건</div>
+          </div>
+        </article>
+        <article class="card metric-card">
+          <div class="metric-title">👛 현재 사용 가능 금액</div>
+          <div>
+            <div class="metric-value" id="remainingMoneyValue">0원</div>
+            <div class="metric-note" id="profileNameNote">환영해요</div>
+          </div>
+        </article>
+        <article class="card metric-card">
+          <div class="metric-title">📊 월 지출 한도 사용률</div>
+          <div>
+            <div class="metric-value" id="budgetUsageValue">0%</div>
+            <div class="metric-note" id="budgetAmountNote">월 지출 한도 0원</div>
+          </div>
+        </article>
+        <article class="card metric-card">
+          <div class="metric-title">🪙 월 사용 가능 금액</div>
+          <div>
+            <div class="metric-value" id="monthlyAvailableValue">0원</div>
+            <div class="metric-note" id="monthlyAvailableNote">생활비 기준</div>
+          </div>
+        </article>
+        <article class="card metric-card">
+          <div class="metric-title">🏆 최다 지출 카테고리</div>
+          <div>
+            <div class="metric-value" id="topCategoryValue">없음</div>
+            <div class="metric-note" id="topCategoryAmountNote">아직 분석 전</div>
+          </div>
+        </article>
+        <article class="card metric-card">
+          <div class="metric-title">🚨 지출 위험 상태</div>
+          <div>
+            <div class="metric-value"><span class="badge safe" id="riskStatusBadge">안전</span></div>
+            <div class="metric-note" id="riskStatusNote">70% 미만</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="profile-insights" id="profileInsights" aria-label="지갑 프로필 요약">
+        <div class="profile-chip">
+          <span>월 고정 지출</span>
+          <strong id="insightFixedExpense">월 고정 지출 예상액 0원</strong>
+        </div>
+        <div class="profile-chip">
+          <span>고정 지출 항목</span>
+          <strong id="insightSubscription">선택한 항목 0개</strong>
+          <small id="insightSubscriptionList">등록된 항목 없음</small>
+        </div>
+        <div class="profile-chip">
+          <span>월급일/용돈일</span>
+          <strong id="insightPaydayStatus">월급일 미설정</strong>
+        </div>
+        <div class="profile-chip">
+          <span>하루 기준</span>
+          <strong id="insightDailyStatus">오늘 지출 0원</strong>
+        </div>
+        <div class="profile-chip">
+          <span>확장 기능</span>
+          <strong id="insightGoalCta">저축 목표 추가하기</strong>
+        </div>
+      </section>
+
+
+      <section class="card service-line" id="serviceLine">
+        <div class="service-line-head">
+          <div>
+            <p class="eyebrow">서비스</p>
+            <h2>오늘 소비하기 전, 여기서 먼저 점검해요</h2>
+            <p>지출 추가, 결제 전 위험 경보, 월급일까지 안전 소비액, 목표 계산을 한곳에서 확인해요.</p>
+          </div>
+          <div class="service-actions" aria-label="서비스 이동">
+            <button class="service-nav-btn" id="servicePrevBtn" type="button" aria-label="이전 서비스">←</button>
+            <span class="service-slide-indicator" id="serviceSlideIndicator">1 / 6</span>
+            <button class="service-nav-btn" id="serviceNextBtn" type="button" aria-label="다음 서비스">→</button>
+          </div>
+        </div>
+
+        <div class="service-viewport">
+          <div class="service-grid" id="serviceTrack">
+          <article class="service-card service-card-wide">
+            <h3>📌 지갑 브리핑</h3>
+            <p>현재 대시보드 기준으로 오늘 바로 봐야 할 숫자만 모아 보여줘요.</p>
+            <div class="service-result" id="serviceBriefResult">거래내역이나 기본 정보를 입력하면 브리핑이 표시됩니다.</div>
+          </article>
+
+          <article class="service-card">
+            <h3>➕ 소비내역 직접 추가</h3>
+            <p>CSV가 없어도 바로 거래내역을 넣을 수 있어요. 추가하면 현재 사용 가능 금액도 자동 차감됩니다.</p>
+            <form id="manualTransactionForm" class="form-grid">
+              <label class="field">
+                <span>날짜</span>
+                <input id="manualDate" type="date" required>
+              </label>
+              <label class="field">
+                <span>금액</span>
+                <input id="manualAmount" type="number" min="0" step="100" placeholder="예: 12000" required>
+              </label>
+              <label class="field">
+                <span>카테고리</span>
+                <select id="manualCategory"></select>
+              </label>
+              <label class="field">
+                <span>거래내용</span>
+                <input id="manualDescription" type="text" placeholder="예: 학식, 쿠팡 파우치" required>
+              </label>
+              <div class="field full">
+                <button class="btn" type="submit">거래 추가</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="service-card">
+            <h3>🔎 소비 시뮬레이션</h3>
+            <p>결제 전에 위험 구간까지 얼마나 남는지 계산하고, 주의/위험이면 화면 경보와 알림음을 울려요.</p>
+            <form id="serviceSimulationForm" class="form-grid">
+              <label class="field">
+                <span>결제 예정 금액</span>
+                <input id="serviceSimAmount" type="number" min="0" step="100" placeholder="예: 25000" required>
+              </label>
+              <label class="field">
+                <span>카테고리</span>
+                <select id="serviceSimCategory"></select>
+              </label>
+              <label class="field full">
+                <span>결제 내용</span>
+                <input id="serviceSimDescription" type="text" placeholder="예: 유튜브 프리미엄, 카페" required>
+              </label>
+              <label class="field full">
+                <span>필요도</span>
+                <select id="serviceSimNeed">
+                  <option value="꼭 필요">꼭 필요</option>
+                  <option value="있으면 좋음">있으면 좋음</option>
+                  <option value="충동구매 같음">충동구매 같음</option>
+                </select>
+              </label>
+              <div class="field full">
+                <button class="btn" type="submit">위험 경보 확인</button>
+              </div>
+            </form>
+            <div class="service-result hidden" id="serviceSimulationResult"></div>
+          </article>
+
+          <article class="service-card">
+            <h3>📅 월급일까지 안전 소비 플랜</h3>
+            <p>다음 월급일/용돈일까지 남은 날을 기준으로 하루 안전 소비액을 계산해요.</p>
+            <div class="form-grid">
+              <label class="field">
+                <span>다음 월급일/용돈일</span>
+                <input id="plannerPayday" type="date">
+              </label>
+              <label class="field">
+                <span>그날까지 남길 목표 금액</span>
+                <input id="plannerReserve" type="number" min="0" step="1000" placeholder="예: 100000">
+              </label>
+            </div>
+            <div class="service-result" id="plannerResult">월급일과 목표 금액을 입력하면 하루 안전 소비액이 나와요.</div>
+          </article>
+
+          <article class="service-card">
+            <h3>👛 잔액 빠른 수정</h3>
+            <p>통장 잔액이나 이번 달 한도가 바뀌었을 때 설정 화면까지 안 들어가고 바로 고쳐요.</p>
+            <form id="quickProfileForm" class="form-grid">
+              <label class="field">
+                <span>현재 사용 가능 금액</span>
+                <input id="quickCurrentMoney" type="number" min="0" step="1000" placeholder="예: 180000">
+              </label>
+              <label class="field">
+                <span>월 지출 한도</span>
+                <input id="quickMonthlyLimit" type="number" min="0" step="1000" placeholder="예: 450000">
+              </label>
+              <label class="field">
+                <span>하루 소비 알림 기준</span>
+                <input id="quickDailyLimit" type="number" min="0" step="1000" placeholder="예: 30000">
+              </label>
+              <label class="field">
+                <span>다음 월급일/용돈일</span>
+                <input id="quickPayday" type="date">
+              </label>
+              <div class="field full">
+                <button class="btn secondary" type="submit">잔액/한도 저장</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="service-card">
+            <h3>🎯 목표 계산기</h3>
+            <p>사고 싶은 것, 저축 목표, 남겨둘 돈이 있을 때 하루 얼마씩 아껴야 하는지 계산해요.</p>
+            <div class="form-grid">
+              <label class="field">
+                <span>목표 금액</span>
+                <input id="goalAmount" type="number" min="0" step="1000" placeholder="예: 300000">
+              </label>
+              <label class="field">
+                <span>현재 모은 금액</span>
+                <input id="goalSaved" type="number" min="0" step="1000" placeholder="예: 50000">
+              </label>
+              <label class="field full">
+                <span>목표 날짜</span>
+                <input id="goalDate" type="date">
+              </label>
+            </div>
+            <div class="service-result" id="goalResult">목표 금액을 입력하면 하루 저축 필요액이 나와요.</div>
+          </article>
+          </div>
+        </div>
+        <div class="service-progress-dots" id="serviceProgressDots" aria-hidden="true"></div>
+      </section>
+
+
+
+      <section class="content-grid">
+        <div class="card section-card">
+          <h2>🧾 CSV 거래내역 업로드</h2>
+          <div class="upload-panel">
+            <label class="field" for="csvFileInput">
+              <span>CSV 파일</span>
+              <input id="csvFileInput" type="file" accept=".csv,text/csv">
+            </label>
+            <div class="button-row">
+              <button class="btn" id="addSampleBtn" type="button">✨ 샘플 거래 추가</button>
+              <button class="btn danger" id="clearTransactionsBtn" type="button">🗑️ 거래내역 전체 삭제</button>
+            </div>
+          </div>
+
+          <h2 style="margin-top: 22px;">🛒 소비하기 전 확인</h2>
+          <form id="simulationForm" class="form-grid">
+            <label class="field">
+              <span>결제 예정 금액</span>
+              <input id="simAmount" type="number" min="0" step="100" placeholder="예: 25000" required>
+            </label>
+            <label class="field">
+              <span>카테고리</span>
+              <select id="simCategory"></select>
+            </label>
+            <label class="field full">
+              <span>결제 내용</span>
+              <input id="simDescription" type="text" placeholder="예: 쿠팡 노트북 파우치" required>
+            </label>
+            <label class="field full">
+              <span>필요도</span>
+              <select id="simNeed">
+                <option value="꼭 필요">꼭 필요</option>
+                <option value="있으면 좋음">있으면 좋음</option>
+                <option value="충동구매 같음">충동구매 같음</option>
+              </select>
+            </label>
+            <div class="field full">
+              <button class="btn" type="submit">🔎 확인하기</button>
+            </div>
+          </form>
+
+          <div class="simulation-result hidden" id="simulationResult">
+            <span class="badge safe" id="simulationBadge">안전</span>
+            <ul class="message-list" id="simulationMessages"></ul>
+            <div class="button-row">
+              <button class="btn" id="confirmSpendBtn" type="button">✅ 결제 확정</button>
+              <button class="btn ghost" id="cancelSpendBtn" type="button">↩️ 결제 취소</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <h2>📈 차트와 분석</h2>
+          <div class="progress-block">
+            <div>
+              <div class="progress-label">
+                <span>월 지출 한도 사용률</span>
+                <strong id="budgetProgressLabel">0%</strong>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="budgetProgressFill"></div>
+              </div>
+            </div>
+            <div>
+              <div class="progress-label">
+                <span>하루 소비 기준 사용률</span>
+                <strong id="dailyProgressLabel">0%</strong>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="dailyProgressFill"></div>
+              </div>
+            </div>
+          </div>
+
+          <h3>카테고리별 지출</h3>
+          <div class="chart" id="categoryChart"></div>
+
+          <h3>분석 리포트</h3>
+          <ul class="report-list" id="analysisReport"></ul>
+        </div>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-head">
+          <h2>📋 거래내역 리스트</h2>
+          <span class="badge review" id="reviewCountBadge">확인 필요 0건</span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>거래내용</th>
+                <th>금액</th>
+                <th>카테고리</th>
+                <th>신뢰도</th>
+                <th>경고 상태</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+              <tr>
+                <td colspan="7" class="empty-state">거래내역이 없어요.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="onboarding-overlay" id="onboardingOverlay" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+    <div class="onboarding-shell">
+      <section class="onboarding-card onboarding-hero" id="welcomeView">
+        <div class="onboarding-control-bar" aria-label="온보딩 상단 상태">
+          <div class="onboarding-logo-mark">지갑방범대</div>
+          <div class="onboarding-status-box">이번 달 지출을 관리해볼까요?</div>
+          <button class="onboarding-theme-toggle" id="onboardingThemeToggleBtn" type="button">🌙 다크모드</button>
+        </div>
+        <div class="onboarding-copy">
+          <p class="eyebrow">로컬 지갑 프로필</p>
+          <div class="onboarding-tabs" role="tablist" aria-label="온보딩 선택">
+            <button class="tab-pill active" id="startTabBtn" type="button">처음 시작하기</button>
+            <button class="tab-pill" id="continueTabBtn" type="button">기존 데이터 이어보기</button>
+          </div>
+          <h2 id="onboardingTitle">처음 오셨나요?</h2>
+          <p>지갑방범대가 당신의 소비 패턴을 분석할 수 있도록 간단한 지갑 프로필을 만들어볼게요.</p>
+          <div class="privacy-note">이 앱은 과제용 로컬 웹앱으로, 입력한 정보는 이 브라우저의 localStorage에만 저장됩니다.</div>
+          <div class="continue-panel" id="continuePanel">아직 저장된 프로필이 없어요.</div>
+          <div class="button-row">
+            <button class="btn" id="startOnboardingBtn" type="button">🚀 시작하기</button>
+            <button class="btn secondary" id="sampleExploreBtn" type="button">✨ 샘플로 둘러보기</button>
+          </div>
+        </div>
+        <div class="onboarding-visual hero-preview-stack" aria-hidden="true">
+          <div class="preview-card floating-card">
+            <div class="preview-title"><span>이번 달 총 지출</span><span>💳</span></div>
+            <div class="preview-amount">284,500원</div>
+          </div>
+          <div class="preview-card floating-card">
+            <div class="preview-title"><span>월 지출 한도</span><span class="badge safe">안전</span></div>
+            <div class="preview-amount">450,000원</div>
+          </div>
+          <div class="preview-card floating-card">
+            <div class="preview-title"><span>현재 사용 가능</span><span>👛</span></div>
+            <div class="preview-amount">180,000원</div>
+          </div>
+          <div class="preview-card floating-card">
+            <div class="preview-title"><span>줄이고 싶은 소비</span><span>☕</span></div>
+            <div class="preview-amount">카페</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="onboarding-card wizard-card hidden" id="wizardView">
+        <form id="onboardingForm">
+          <div class="wizard-head">
+            <div>
+              <p class="eyebrow" id="wizardStepCategory">기본 정보</p>
+              <h2 id="wizardStepTitle">지갑 프로필을 만들어볼게요</h2>
+              <p id="wizardStepDescription">닉네임과 앱 사용 목적을 알려주세요.</p>
+            </div>
+            <div class="wizard-head-actions">
+              <button class="wizard-theme-toggle" id="wizardThemeToggleBtn" type="button" aria-label="다크모드로 전환" title="다크모드로 전환">🌙</button>
+              <div class="wizard-count" id="wizardStepCount">1 / 5</div>
+            </div>
+          </div>
+          <div class="wizard-progress" aria-hidden="true">
+            <div class="wizard-progress-fill" id="wizardProgressFill"></div>
+          </div>
+
+          <div class="wizard-carousel" id="wizardCarousel">
+            <button class="step-preview-card step-preview-left" id="prevStepPreview" type="button" aria-label="이전 단계 미리보기">
+              <span class="preview-kicker" id="prevPreviewKicker">1 / 5</span>
+              <strong id="prevPreviewTitle">시작 화면</strong>
+              <small id="prevPreviewDescription">처음 시작하기 또는 샘플 둘러보기를 선택해요.</small>
+            </button>
+
+            <div class="step-current-card">
+          <div class="wizard-step active" data-step="0">
+            <div class="form-grid">
+              <label class="field full">
+                <span>닉네임</span>
+                <input id="profileName" type="text" placeholder="예: 수리" required>
+              </label>
+              <div class="field full">
+                <label>학생 유형</label>
+                <div class="option-grid">
+                  <label class="option-choice"><input type="radio" name="studentType" value="대학생" checked><span class="option-body">대학생</span></label>
+                  <label class="option-choice"><input type="radio" name="studentType" value="대학원생"><span class="option-body">대학원생</span></label>
+                  <label class="option-choice"><input type="radio" name="studentType" value="취업준비생"><span class="option-body">취업준비생</span></label>
+                  <label class="option-choice"><input type="radio" name="studentType" value="기타"><span class="option-body">기타</span></label>
+                </div>
+              </div>
+              <div class="field full">
+                <label>주 사용 목적</label>
+                <div class="option-grid">
+                  <label class="option-choice"><input type="radio" name="mainPurpose" value="생활비 관리" checked><span class="option-body">생활비 관리</span></label>
+                  <label class="option-choice"><input type="radio" name="mainPurpose" value="소비 습관 분석"><span class="option-body">소비 습관 분석</span></label>
+                  <label class="option-choice"><input type="radio" name="mainPurpose" value="충동구매 방지"><span class="option-body">충동구매 방지</span></label>
+                  <label class="option-choice"><input type="radio" name="mainPurpose" value="구독/고정지출 점검"><span class="option-body">구독/고정지출 점검</span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-step" data-step="1">
+            <p class="step-description">월 사용 가능 금액은 이번 달 실제로 쓸 수 있는 돈이고, 월 지출 한도는 그중 넘기지 않고 싶은 소비 기준 금액이에요.</p>
+            <div class="form-grid">
+              <label class="field">
+                <span>월 사용 가능 금액</span>
+                <input id="monthlyAvailableMoney" type="number" min="0" step="1000" placeholder="예: 650000" required>
+              </label>
+              <label class="field">
+                <span>월 지출 한도</span>
+                <input id="monthlySpendingLimit" type="number" min="0" step="1000" placeholder="예: 450000" required>
+              </label>
+              <label class="field">
+                <span>현재 사용 가능 금액</span>
+                <input id="currentMoney" type="number" min="0" step="1000" placeholder="예: 180000" required>
+              </label>
+              <label class="field">
+                <span>위험 소비 기준 금액</span>
+                <input id="dangerThreshold" type="number" min="0" step="1000" placeholder="예: 50000" required>
+              </label>
+              <label class="field">
+                <span>하루 소비 알림 기준 금액</span>
+                <input id="dailyWarningLimit" type="number" min="0" step="1000" placeholder="예: 30000" required>
+              </label>
+              <label class="field">
+                <span>다음 월급일/용돈일</span>
+                <input id="profilePayday" type="date">
+              </label>
+              <div class="field full">
+                <div class="privacy-note" id="budgetAutoFillNote">월 사용 가능 금액과 월 지출 한도를 입력하면 아래 금액은 자동으로 대략 채워져요. 마음에 안 들면 바로 수정하면 됩니다.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-step" data-step="2">
+            <p class="step-description">매달 자동으로 빠져나가는 월세, 통신비, 구독비, 교통비 등을 모두 합쳐서 한 번에 입력해주세요. 버튼식 선택은 복잡해서 직접 입력 방식으로 단순화했어요.</p>
+            <div class="form-grid">
+              <label class="field full">
+                <span>월 고정 지출 총액</span>
+                <input id="fixedExpense" type="number" min="0" step="1000" placeholder="예: 185000">
+              </label>
+              <div class="field full subscription-price-info">
+                <span>입력 예시</span>
+                <strong>월세 300,000원 + 통신비 55,000원 + 구독비 29,000원이라면 384,000원처럼 총액만 입력하면 됩니다.</strong>
+              </div>
+
+              <div class="hidden" aria-hidden="true">
+                <strong id="fixedExpenseTotalPreview">0원</strong>
+                <input id="customSubscription" type="hidden">
+                <input id="subscriptionTotal" type="hidden" value="0">
+                <div id="fixedExpenseOptionGrid"></div>
+                <button id="addCustomFixedExpenseBtn" type="button"></button>
+                <div id="fixedExpenseCustomList"></div>
+                <strong id="subscriptionPricePreview"></strong>
+                <input id="customFixedExpenseName" type="hidden">
+                <input id="customFixedExpenseAmount" type="hidden">
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-step" data-step="3">
+            <p class="step-description">소비 경고가 너무 조용하면 의미가 없으니까, 경고 강도와 하루 기준만 마지막으로 확인할게요.</p>
+            <div class="form-grid">
+              <div class="field full">
+                <label>소비 경고 강도</label>
+                <div class="option-grid">
+                  <label class="option-choice"><input type="radio" name="warningTone" value="부드럽게"><span class="option-body">부드럽게</span></label>
+                  <label class="option-choice"><input type="radio" name="warningTone" value="보통" checked><span class="option-body">보통</span></label>
+                  <label class="option-choice"><input type="radio" name="warningTone" value="강하게"><span class="option-body">강하게</span></label>
+                </div>
+              </div>
+              <input id="targetReduceCategory" type="hidden" value="기타">
+              <div class="field full">
+                <label>하루 소비 알림 기준</label>
+                <div class="privacy-note" id="dailyLimitSummary">하루 기준이 설정되어 있으면 오늘 지출 합계를 함께 확인해드려요.</div>
+              </div>
+            </div>
+          </div>
+            </div>
+
+            <button class="step-preview-card step-preview-right" id="nextStepPreview" type="button" aria-label="다음 단계 미리보기">
+              <span class="preview-kicker" id="nextPreviewKicker">3 / 5</span>
+              <strong id="nextPreviewTitle">예산 설정</strong>
+              <small id="nextPreviewDescription">월 사용 가능 금액과 월 지출 한도를 나눠서 입력해요.</small>
+            </button>
+          </div>
+
+          <div class="wizard-actions">
+            <button class="btn ghost" id="prevStepBtn" type="button">← 이전</button>
+            <button class="btn" id="nextStepBtn" type="button">다음 →</button>
+            <button class="btn hidden" id="saveProfileBtn" type="submit">💾 프로필 저장하고 시작하기</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <div class="danger-alarm" id="dangerAlarm" aria-hidden="true">
+    <div class="danger-alarm-card">
+      <strong>🚨 위험 경보</strong>
+      <span id="dangerAlarmMessage">지출 위험 구간에 가까워졌어요.</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const STORAGE_KEYS = {
+        profile: "jigapGuard.profile.v1",
+        transactions: "jigapGuard.transactions.v1",
+        learning: "jigapGuard.learning.v1",
+        theme: "jigapGuard.theme.v1"
+      };
+
+      const CATEGORIES = ["식비", "카페", "편의점", "배달", "교통", "쇼핑", "구독", "학업", "생필품", "의료", "기타"];
+
+      const CATEGORY_KEYWORDS = {
+        "식비": ["식당", "김밥", "버거", "맥도날드", "롯데리아", "맘스터치", "학식", "분식", "고기", "치킨"],
+        "카페": ["스타벅스", "메가커피", "컴포즈", "이디야", "빽다방", "투썸", "coffee", "cafe"],
+        "편의점": ["cu", "gs25", "세븐일레븐", "이마트24", "emart24"],
+        "배달": ["배민", "요기요", "쿠팡이츠", "baemin", "배달의민족"],
+        "교통": ["버스", "지하철", "택시", "카카오t", "코레일", "ktx", "srt", "교통"],
+        "쇼핑": ["gmarket", "지마켓", "11번가", "무신사", "네이버쇼핑"],
+        "구독": ["netflix", "넷플릭스", "youtube", "유튜브", "spotify", "라프텔", "laftel", "icloud"],
+        "학업": ["교보문고", "알라딘", "yes24", "인프런", "패스트캠퍼스", "강의", "교재", "도서"],
+        "생필품": ["다이소", "올리브영", "마트", "이마트", "홈플러스", "롯데마트"],
+        "의료": ["약국", "병원", "의원", "치과", "피부과"]
+      };
+
+      const AMBIGUOUS_RULES = [
+        { keywords: ["쿠팡", "coupang"], category: "쇼핑", confidence: 0.56 },
+        { keywords: ["네이버페이", "naverpay"], category: "기타", confidence: 0.45 },
+        { keywords: ["카카오페이", "kakaopay"], category: "기타", confidence: 0.45 },
+        { keywords: ["토스페이", "tosspay"], category: "기타", confidence: 0.45 }
+      ];
+
+      const SUBSCRIPTION_PRICES = {
+        "유튜브 프리미엄": 14900,
+        "넷플릭스 스탠다드": 13500,
+        "넷플릭스 프리미엄": 17000,
+        "라프텔 프리미엄": 14900,
+        "스포티파이 프리미엄": 11990,
+        "아이클라우드+ 50GB": 1100,
+        "아이클라우드+ 200GB": 4400,
+        "쿠팡 와우": 7890
+      };
+
+      const FIXED_EXPENSE_OPTIONS = [
+        { name: "월세", amount: 300000, type: "housing" },
+        { name: "대출 상환", amount: 100000, type: "loan" },
+        { name: "통신비", amount: 55000, type: "phone" },
+        { name: "교통 정기권", amount: 60000, type: "transport" },
+        { name: "보험", amount: 30000, type: "insurance" },
+        { name: "유튜브 프리미엄", amount: 14900, type: "subscription" },
+        { name: "넷플릭스 스탠다드", amount: 13500, type: "subscription" },
+        { name: "라프텔 프리미엄", amount: 14900, type: "subscription" },
+        { name: "스포티파이 프리미엄", amount: 11990, type: "subscription" },
+        { name: "아이클라우드+ 50GB", amount: 1100, type: "subscription" },
+        { name: "쿠팡 와우", amount: 7890, type: "subscription" }
+      ];
+
+      const CSV_ALIASES = {
+        date: ["날짜", "거래일", "거래일시", "date"],
+        description: ["거래내용", "내용", "적요", "description", "memo"],
+        amount: ["금액", "출금", "출금금액", "amount", "price"]
+      };
+
+      const STATUS_LABELS = {
+        safe: "안전",
+        caution: "주의",
+        danger: "위험"
+      };
+
+      const CATEGORY_EMOJI = {
+        "식비": "🍚",
+        "카페": "☕",
+        "편의점": "🏪",
+        "배달": "🛵",
+        "교통": "🚌",
+        "쇼핑": "🛍️",
+        "구독": "📺",
+        "학업": "📚",
+        "생필품": "🧻",
+        "의료": "💊",
+        "기타": "✨"
+      };
+
+      const ONBOARDING_STEPS = [
+        { category: "2 / 5 기본 정보", shortTitle: "기본 정보", title: "지갑 프로필을 만들어볼게요", description: "닉네임과 앱 사용 목적을 알려주세요." },
+        { category: "3 / 5 예산 설정", shortTitle: "예산 설정", title: "생활비와 지출 한도를 정해요", description: "월 사용 가능 금액과 월 지출 한도의 차이를 기준으로 위험도를 계산합니다." },
+        { category: "4 / 5 월 고정 지출", shortTitle: "월 고정 지출", title: "매달 자동으로 나가는 돈을 확인해요", description: "월세, 대출, 통신비, 구독처럼 반복되는 지출을 한 번에 묶어볼게요." },
+        { category: "5 / 5 소비 성향", shortTitle: "소비 성향", title: "경고 톤을 내 취향에 맞춰요", description: "소비 성향에 따라 경고 문구와 절약 추천을 다르게 보여줄게요." }
+      ];
+
+      let profile = loadProfile();
+      let transactions = loadTransactions();
+      let learningData = loadLearningData();
+      let onboardingStep = 0;
+      let dashboardMetricIndex = 0;
+      let dashboardInsightIndex = 0;
+      let serviceSlideIndex = 0;
+      let fixedExpenseDraftItems = [];
+      const carouselAnimationTimers = {};
+      let simulationDraft = null;
+      let toastTimer = null;
+
+      document.addEventListener("DOMContentLoaded", initApp);
+
+      function initApp() {
+        applySavedTheme();
+        populateCategorySelects();
+        bindEvents();
+        renderAll();
+
+        if (!profile) {
+          showOnboarding("welcome");
+        }
+      }
+
+      function bindEvents() {
+        $("onboardingForm").addEventListener("submit", handleProfileSave);
+        $("themeToggleBtn").addEventListener("click", toggleTheme);
+        $("onboardingThemeToggleBtn").addEventListener("click", toggleTheme);
+        $("wizardThemeToggleBtn").addEventListener("click", toggleTheme);
+        $("editProfileBtn").addEventListener("click", function () {
+          showOnboarding("wizard");
+        });
+        $("resetSettingsBtn").addEventListener("click", resetSettings);
+        $("startTabBtn").addEventListener("click", showStartTab);
+        $("continueTabBtn").addEventListener("click", continueStoredProfile);
+        $("startOnboardingBtn").addEventListener("click", function () {
+          showOnboarding("wizard");
+        });
+        $("sampleExploreBtn").addEventListener("click", exploreWithSampleData);
+        $("prevStepBtn").addEventListener("click", goToPreviousStep);
+        $("nextStepBtn").addEventListener("click", goToNextStep);
+        $("prevStepPreview").addEventListener("click", goToPreviousStepPreview);
+        $("nextStepPreview").addEventListener("click", goToNextStepPreview);
+        ["monthlyAvailableMoney", "monthlySpendingLimit"].forEach(function (inputId) {
+          $(inputId).addEventListener("input", updateBudgetAutoFill);
+        });
+        ["currentMoney", "dangerThreshold", "dailyWarningLimit"].forEach(function (inputId) {
+          $(inputId).addEventListener("input", function () {
+            $(inputId).dataset.autoSuggested = "false";
+          });
+        });
+        $("metricGrid").addEventListener("click", function (event) {
+          handleDashboardCarouselClick(event, "metric");
+        });
+        $("profileInsights").addEventListener("click", function (event) {
+          handleDashboardCarouselClick(event, "insight");
+        });
+        $("metricGrid").addEventListener("keydown", function (event) {
+          handleDashboardCarouselKey(event, "metric");
+        });
+        $("profileInsights").addEventListener("keydown", function (event) {
+          handleDashboardCarouselKey(event, "insight");
+        });
+        $("dailyWarningLimit").addEventListener("input", updateDailyLimitSummary);
+        $("customSubscription").addEventListener("input", renderSubscriptionPricePreview);
+        $("subscriptionTotal").addEventListener("input", renderSubscriptionPricePreview);
+        $("fixedExpense").addEventListener("input", renderFixedExpenseBuilder);
+        $("fixedExpenseOptionGrid").addEventListener("click", handleFixedExpenseOptionClick);
+        $("addCustomFixedExpenseBtn").addEventListener("click", addCustomFixedExpense);
+        $("fixedExpenseCustomList").addEventListener("click", function (event) {
+          const removeButton = event.target.closest("[data-remove-fixed-expense]");
+          if (removeButton) {
+            removeCustomFixedExpense(removeButton.dataset.removeFixedExpense);
+          }
+        });
+        document.querySelectorAll('input[name="subscriptions"]').forEach(function (input) {
+          input.addEventListener("change", updateSubscriptionTotalFromSelection);
+        });
+        $("csvFileInput").addEventListener("change", handleCsvFileChange);
+        $("addSampleBtn").addEventListener("click", addSampleTransactions);
+        $("clearTransactionsBtn").addEventListener("click", clearAllTransactions);
+        $("simulationForm").addEventListener("submit", handleSimulationSubmit);
+        $("confirmSpendBtn").addEventListener("click", confirmSimulatedSpend);
+        $("cancelSpendBtn").addEventListener("click", clearSimulationResult);
+
+        if ($("manualTransactionForm")) {
+          $("manualTransactionForm").addEventListener("submit", handleManualTransactionSubmit);
+        }
+
+        if ($("serviceSimulationForm")) {
+          $("serviceSimulationForm").addEventListener("submit", handleServiceSimulationSubmit);
+        }
+
+        if ($("quickProfileForm")) {
+          $("quickProfileForm").addEventListener("submit", handleQuickProfileSubmit);
+        }
+
+        if ($("servicePrevBtn")) {
+          $("servicePrevBtn").addEventListener("click", function () {
+            moveServiceSlide(-1);
+          });
+        }
+
+        if ($("serviceNextBtn")) {
+          $("serviceNextBtn").addEventListener("click", function () {
+            moveServiceSlide(1);
+          });
+        }
+
+        if ($("serviceLine")) {
+          $("serviceLine").addEventListener("keydown", function (event) {
+            if (event.key === "ArrowLeft") moveServiceSlide(-1);
+            if (event.key === "ArrowRight") moveServiceSlide(1);
+          });
+        }
+
+        ["plannerPayday", "plannerReserve"].forEach(function (inputId) {
+          const input = $(inputId);
+          if (input) input.addEventListener("input", updatePlannerResult);
+        });
+
+        ["goalAmount", "goalSaved", "goalDate"].forEach(function (inputId) {
+          const input = $(inputId);
+          if (input) input.addEventListener("input", updateGoalResult);
+        });
+
+        $("transactionTableBody").addEventListener("change", function (event) {
+          if (event.target.classList.contains("category-select")) {
+            updateTransactionCategory(event.target.dataset.id, event.target.value);
+          }
+        });
+
+        $("transactionTableBody").addEventListener("click", function (event) {
+          const deleteButton = event.target.closest("[data-delete-id]");
+          if (deleteButton) {
+            deleteTransaction(deleteButton.dataset.deleteId);
+          }
+        });
+      }
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function populateCategorySelects() {
+        const categoryOptions = CATEGORIES.map(function (category) {
+          return '<option value="' + escapeHtml(category) + '">' + CATEGORY_EMOJI[category] + " " + category + '</option>';
+        });
+        const simulatorOptions = ['<option value="auto">자동 분류</option>'].concat(categoryOptions);
+
+        $("simCategory").innerHTML = simulatorOptions.join("");
+
+        if ($("manualCategory")) {
+          $("manualCategory").innerHTML = categoryOptions.join("");
+        }
+
+        if ($("serviceSimCategory")) {
+          $("serviceSimCategory").innerHTML = simulatorOptions.join("");
+        }
+
+        if ($("manualDate")) {
+          $("manualDate").value = todayISO();
+        }
+      }
+
+      function handleProfileSave(event) {
+        event.preventDefault();
+
+        if (!validateCurrentStep()) return;
+
+        const previousCreatedAt = profile && profile.createdAt ? profile.createdAt : new Date().toISOString();
+        const nextProfile = migrateProfile(Object.assign(collectProfileFromForm(), {
+          createdAt: previousCreatedAt,
+          updatedAt: new Date().toISOString(),
+          isSample: false
+        }));
+
+        if (!nextProfile.name) {
+          showToast("닉네임을 입력해주세요.");
+          return;
+        }
+
+        profile = nextProfile;
+        saveProfile();
+        hideOnboarding();
+        renderAll();
+        showToast("기본 정보가 저장됐어요.");
+      }
+
+      function showOnboarding(view) {
+        updateWelcomeState();
+        $("onboardingOverlay").classList.add("active");
+
+        if (view === "wizard") {
+          startProfileWizard();
+        } else {
+          showWelcomeView();
+        }
+      }
+
+      function hideOnboarding() {
+        $("onboardingOverlay").classList.remove("active");
+      }
+
+      function showWelcomeView() {
+        $("onboardingOverlay").classList.remove("is-wizard-open");
+        $("welcomeView").classList.remove("hidden");
+        $("wizardView").classList.add("hidden");
+        resetOnboardingScroll(false);
+        showStartTab();
+      }
+
+      function startProfileWizard() {
+        const isNewProfile = !profile;
+        fillProfileForm(profile || createNewProfileDraft());
+        prepareBudgetAutoFill(isNewProfile);
+        updateBudgetAutoFill();
+        onboardingStep = 0;
+        $("onboardingOverlay").classList.add("is-wizard-open");
+        $("welcomeView").classList.add("hidden");
+        $("wizardView").classList.remove("hidden");
+        renderOnboardingStep();
+      }
+
+      function showStartTab() {
+        $("startTabBtn").classList.add("active");
+        $("continueTabBtn").classList.remove("active");
+        $("continuePanel").classList.toggle("active", !profile);
+      }
+
+      function continueStoredProfile() {
+        if (!profile) {
+          $("startTabBtn").classList.remove("active");
+          $("continueTabBtn").classList.add("active");
+          $("continuePanel").textContent = "아직 저장된 프로필이 없어요.";
+          $("continuePanel").classList.add("active");
+          return;
+        }
+
+        hideOnboarding();
+        renderAll();
+        showToast(profile.name + "님의 저장된 지갑 프로필을 이어볼게요.");
+      }
+
+      function updateWelcomeState() {
+        const hasProfile = Boolean(profile);
+        $("continueTabBtn").disabled = !hasProfile;
+        $("continuePanel").textContent = hasProfile
+          ? profile.name + "님의 저장된 지갑 프로필이 있어요. 이어보기를 누르면 대시보드로 돌아갑니다."
+          : "아직 저장된 프로필이 없어요.";
+        $("continuePanel").classList.toggle("active", !hasProfile);
+      }
+
+      function renderOnboardingStep(direction) {
+        const step = ONBOARDING_STEPS[onboardingStep];
+        const steps = Array.from(document.querySelectorAll(".wizard-step"));
+
+        steps.forEach(function (element, index) {
+          element.classList.toggle("active", index === onboardingStep);
+        });
+
+        $("wizardStepCategory").textContent = step.category;
+        $("wizardStepTitle").textContent = step.title;
+        $("wizardStepDescription").textContent = step.description;
+        $("wizardStepCount").textContent = (onboardingStep + 2) + " / 5";
+        $("wizardProgressFill").style.width = (((onboardingStep + 2) / 5) * 100) + "%";
+        $("prevStepBtn").disabled = onboardingStep === 0;
+        $("nextStepBtn").classList.toggle("hidden", onboardingStep === ONBOARDING_STEPS.length - 1);
+        $("saveProfileBtn").classList.toggle("hidden", onboardingStep !== ONBOARDING_STEPS.length - 1);
+        renderStepPreviews();
+        animateWizardStep(direction);
+        updateDailyLimitSummary();
+        renderFixedExpenseBuilder();
+        resetOnboardingScroll(true);
+      }
+
+      function renderStepPreviews() {
+        const previousStep = ONBOARDING_STEPS[onboardingStep - 1];
+        const nextStep = ONBOARDING_STEPS[onboardingStep + 1];
+        const previousButton = $("prevStepPreview");
+        const nextButton = $("nextStepPreview");
+
+        if (previousButton) {
+          previousButton.disabled = false;
+          $("prevPreviewKicker").textContent = previousStep ? previousStep.category : "1 / 5 시작하기";
+          $("prevPreviewTitle").textContent = previousStep ? previousStep.shortTitle : "시작 화면";
+          $("prevPreviewDescription").textContent = previousStep
+            ? previousStep.description
+            : "처음 시작하기 또는 샘플 둘러보기를 선택해요.";
+        }
+
+        if (nextButton) {
+          nextButton.disabled = onboardingStep === ONBOARDING_STEPS.length - 1;
+          $("nextPreviewKicker").textContent = nextStep ? nextStep.category : "완료";
+          $("nextPreviewTitle").textContent = nextStep ? nextStep.shortTitle : "저장 후 대시보드";
+          $("nextPreviewDescription").textContent = nextStep
+            ? nextStep.description
+            : "프로필을 저장하면 바로 지출 대시보드로 이동해요.";
+        }
+      }
+
+      function animateWizardStep(direction) {
+        const carousel = $("wizardCarousel");
+        if (!carousel) return;
+
+        carousel.classList.remove("is-animating-next", "is-animating-prev");
+        if (!direction) return;
+
+        void carousel.offsetWidth;
+        carousel.classList.add(direction === "prev" ? "is-animating-prev" : "is-animating-next");
+        window.clearTimeout(carouselAnimationTimers.wizardStep);
+        carouselAnimationTimers.wizardStep = window.setTimeout(function () {
+          carousel.classList.remove("is-animating-next", "is-animating-prev");
+        }, 380);
+      }
+
+      function resetOnboardingScroll(shouldAlignTop) {
+        const overlay = $("onboardingOverlay");
+        if (!overlay) return;
+
+        requestAnimationFrame(function () {
+          if (overlay.scrollTo) {
+            overlay.scrollTo({ top: 0, behavior: shouldAlignTop ? "smooth" : "auto" });
+          } else {
+            overlay.scrollTop = 0;
+          }
+        });
+      }
+
+      function goToPreviousStep() {
+        onboardingStep = Math.max(0, onboardingStep - 1);
+        renderOnboardingStep("prev");
+      }
+
+      function goToNextStep() {
+        if (!validateCurrentStep()) return;
+        onboardingStep = Math.min(ONBOARDING_STEPS.length - 1, onboardingStep + 1);
+        renderOnboardingStep("next");
+      }
+
+      function goToPreviousStepPreview() {
+        if (onboardingStep === 0) {
+          showWelcomeView();
+          return;
+        }
+
+        goToPreviousStep();
+      }
+
+      function goToNextStepPreview() {
+        if (onboardingStep >= ONBOARDING_STEPS.length - 1) return;
+        goToNextStep();
+      }
+
+      function validateCurrentStep() {
+        const activeStep = document.querySelector('.wizard-step[data-step="' + onboardingStep + '"]');
+        const requiredInputs = Array.from(activeStep.querySelectorAll("input[required], select[required]"));
+
+        for (const input of requiredInputs) {
+          if (!input.checkValidity()) {
+            input.reportValidity();
+            return false;
+          }
+        }
+
+        if (onboardingStep === 1) {
+          if (parsePositiveNumber($("monthlySpendingLimit").value) <= 0 || parsePositiveNumber($("dangerThreshold").value) <= 0) {
+            showToast("월 지출 한도와 위험 소비 기준 금액은 0보다 커야 해요.");
+            return false;
+          }
+          if (parsePositiveNumber($("monthlyAvailableMoney").value) <= 0 || parsePositiveNumber($("currentMoney").value) <= 0) {
+            showToast("월 사용 가능 금액과 현재 사용 가능 금액을 입력해주세요.");
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      function fillProfileForm(activeProfile) {
+        const safeProfile = migrateProfile(activeProfile || createEmptyProfile());
+
+        $("profileName").value = activeProfile.name || "";
+        setRadioValue("studentType", safeProfile.studentType);
+        setRadioValue("mainPurpose", safeProfile.mainPurpose);
+        $("monthlyAvailableMoney").value = safeProfile.monthlyAvailableMoney || "";
+        $("monthlySpendingLimit").value = safeProfile.monthlySpendingLimit || "";
+        $("currentMoney").value = safeProfile.currentMoney || "";
+        $("dangerThreshold").value = safeProfile.dangerThreshold || 50000;
+        $("dailyWarningLimit").value = safeProfile.dailyWarningLimit || "";
+        if ($("profilePayday")) $("profilePayday").value = safeProfile.payday || "";
+        $("fixedExpense").value = safeProfile.fixedExpense || "";
+        fixedExpenseDraftItems = normalizeFixedExpenseItems(safeProfile.fixedExpenseItems || []);
+        setCheckboxValues("subscriptions", safeProfile.subscriptions || []);
+        $("customSubscription").value = safeProfile.customSubscription || "";
+        $("subscriptionTotal").value = safeProfile.subscriptionTotal || "";
+        $("customFixedExpenseName").value = "";
+        $("customFixedExpenseAmount").value = "";
+        if ($("targetReduceCategory")) $("targetReduceCategory").value = safeProfile.targetReduceCategory || "기타";
+        setRadioValue("warningTone", safeProfile.warningTone);
+        updateDailyLimitSummary();
+        renderFixedExpenseBuilder();
+      }
+
+      function collectProfileFromForm() {
+        return {
+          name: $("profileName").value.trim(),
+          studentType: getRadioValue("studentType", "대학생"),
+          mainPurpose: getRadioValue("mainPurpose", "생활비 관리"),
+          monthlyAvailableMoney: parsePositiveNumber($("monthlyAvailableMoney").value),
+          monthlySpendingLimit: parsePositiveNumber($("monthlySpendingLimit").value),
+          currentMoney: parsePositiveNumber($("currentMoney").value),
+          dangerThreshold: parsePositiveNumber($("dangerThreshold").value),
+          fixedExpense: parsePositiveNumber($("fixedExpense").value),
+          fixedExpenseItems: [],
+          subscriptions: [],
+          customSubscription: "",
+          subscriptionTotal: 0,
+          targetReduceCategory: "기타",
+          warningTone: getRadioValue("warningTone", "보통"),
+          dailyWarningLimit: parsePositiveNumber($("dailyWarningLimit").value),
+          payday: $("profilePayday") ? $("profilePayday").value : "",
+          theme: getCurrentTheme()
+        };
+      }
+
+      function prepareBudgetAutoFill(isNewProfile) {
+        ["currentMoney", "dangerThreshold", "dailyWarningLimit"].forEach(function (inputId) {
+          const input = $(inputId);
+          if (!input) return;
+          input.dataset.autoSuggested = isNewProfile || !input.value ? "true" : "false";
+        });
+      }
+
+      function updateBudgetAutoFill() {
+        const availableMoney = parsePositiveNumber($("monthlyAvailableMoney").value);
+        const spendingLimit = parsePositiveNumber($("monthlySpendingLimit").value);
+
+        if (availableMoney > 0) {
+          setAutoSuggestedBudgetValue("currentMoney", roundToUnit(availableMoney, 1000));
+        }
+
+        if (spendingLimit > 0) {
+          const dangerThreshold = clampNumber(roundToUnit(spendingLimit * 0.12, 1000), 10000, 70000);
+          const dailyWarningLimit = clampNumber(roundToUnit(spendingLimit * 0.07, 1000), 10000, 50000);
+          setAutoSuggestedBudgetValue("dangerThreshold", dangerThreshold);
+          setAutoSuggestedBudgetValue("dailyWarningLimit", dailyWarningLimit);
+          updateBudgetAutoFillNote(availableMoney, spendingLimit, dangerThreshold, dailyWarningLimit);
+        } else {
+          updateBudgetAutoFillNote(availableMoney, spendingLimit, 0, 0);
+        }
+
+        updateDailyLimitSummary();
+      }
+
+      function setAutoSuggestedBudgetValue(inputId, value) {
+        const input = $(inputId);
+        if (!input || value <= 0) return;
+
+        const canSuggest = !input.value || input.dataset.autoSuggested === "true";
+        if (!canSuggest) return;
+
+        input.value = value;
+        input.dataset.autoSuggested = "true";
+      }
+
+      function updateBudgetAutoFillNote(availableMoney, spendingLimit, dangerThreshold, dailyWarningLimit) {
+        const note = $("budgetAutoFillNote");
+        if (!note) return;
+
+        if (availableMoney <= 0 && spendingLimit <= 0) {
+          note.textContent = "월 사용 가능 금액과 월 지출 한도를 입력하면 아래 금액은 자동으로 대략 채워져요. 마음에 안 들면 바로 수정하면 됩니다.";
+          return;
+        }
+
+        const pieces = [];
+        if (availableMoney > 0) pieces.push("현재 사용 가능 금액 " + formatCurrency(roundToUnit(availableMoney, 1000)));
+        if (spendingLimit > 0) {
+          pieces.push("위험 소비 기준 " + formatCurrency(dangerThreshold));
+          pieces.push("하루 알림 기준 " + formatCurrency(dailyWarningLimit));
+        }
+
+        note.textContent = "자동 예측: " + pieces.join(" · ") + " 정도로 채워둘게요. 직접 고치면 그 값은 더 이상 자동으로 덮어쓰지 않아요.";
+      }
+
+      function roundToUnit(value, unit) {
+        return Math.max(0, Math.round(Number(value || 0) / unit) * unit);
+      }
+
+      function clampNumber(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function updateDailyLimitSummary() {
+        const summary = $("dailyLimitSummary");
+        if (!summary) return;
+
+        const limit = parsePositiveNumber($("dailyWarningLimit").value);
+        summary.textContent = limit > 0
+          ? "하루 " + formatCurrency(limit) + " 이상 쓰면 오늘 지출 경고를 표시할게요."
+          : "하루 소비 알림 기준이 아직 설정되지 않았어요.";
+      }
+
+      function setRadioValue(name, value) {
+        const target = document.querySelector('input[name="' + name + '"][value="' + cssEscape(value) + '"]');
+        const fallback = document.querySelector('input[name="' + name + '"]');
+        if (target) target.checked = true;
+        else if (fallback) fallback.checked = true;
+      }
+
+      function getRadioValue(name, fallback) {
+        const checked = document.querySelector('input[name="' + name + '"]:checked');
+        return checked ? checked.value : fallback;
+      }
+
+      function setCheckboxValues(name, values) {
+        const valueSet = new Set(values || []);
+        document.querySelectorAll('input[name="' + name + '"]').forEach(function (input) {
+          input.checked = valueSet.has(input.value);
+        });
+      }
+
+      function getCheckboxValues(name) {
+        return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(function (input) {
+          return input.value;
+        });
+      }
+
+      function handleFixedExpenseOptionClick(event) {
+        const button = event.target.closest("[data-fixed-expense-name]");
+        if (!button) return;
+
+        const name = button.dataset.fixedExpenseName;
+        const amount = parsePositiveNumber(button.dataset.fixedExpenseAmount);
+        const existingIndex = fixedExpenseDraftItems.findIndex(function (item) {
+          return item.name === name && !item.custom;
+        });
+
+        if (existingIndex >= 0) {
+          fixedExpenseDraftItems.splice(existingIndex, 1);
+        } else {
+          fixedExpenseDraftItems.push({
+            name: name,
+            amount: amount,
+            type: getFixedExpenseOptionType(name),
+            custom: false
+          });
+        }
+
+        updateFixedExpenseTotalFromItems();
+      }
+
+      function addCustomFixedExpense() {
+        const name = $("customFixedExpenseName").value.trim();
+        const amount = parsePositiveNumber($("customFixedExpenseAmount").value);
+
+        if (!name || amount <= 0) {
+          showToast("고정 지출 이름과 금액을 입력해주세요.");
+          return;
+        }
+
+        fixedExpenseDraftItems.push({
+          id: createId(),
+          name: name,
+          amount: amount,
+          type: SUBSCRIPTION_PRICES[name] || normalizeText(name).includes("구독") || normalizeText(name).includes("프리미엄") ? "subscription" : "custom",
+          custom: true
+        });
+        $("customFixedExpenseName").value = "";
+        $("customFixedExpenseAmount").value = "";
+        updateFixedExpenseTotalFromItems();
+      }
+
+      function removeCustomFixedExpense(itemId) {
+        fixedExpenseDraftItems = fixedExpenseDraftItems.filter(function (item) {
+          return String(item.id || item.name) !== String(itemId);
+        });
+        updateFixedExpenseTotalFromItems();
+      }
+
+      function updateFixedExpenseTotalFromItems() {
+        const total = calculateFixedExpenseItemsTotal(getSelectedFixedExpenseItems());
+        $("fixedExpense").value = total;
+        renderFixedExpenseBuilder();
+      }
+
+      function renderFixedExpenseBuilder() {
+        const selectedItems = getSelectedFixedExpenseItems();
+        const itemTotal = calculateFixedExpenseItemsTotal(selectedItems);
+        const manualTotal = parsePositiveNumber($("fixedExpense").value);
+        const visibleTotal = manualTotal > 0 || itemTotal === 0 ? manualTotal : itemTotal;
+        const fixedTotalPreview = $("fixedExpenseTotalPreview");
+
+        document.querySelectorAll("[data-fixed-expense-name]").forEach(function (button) {
+          const isSelected = selectedItems.some(function (item) {
+            return item.name === button.dataset.fixedExpenseName && !item.custom;
+          });
+          button.classList.toggle("is-selected", isSelected);
+          button.setAttribute("aria-pressed", String(isSelected));
+        });
+
+        if (fixedTotalPreview) {
+          fixedTotalPreview.textContent = formatCurrency(visibleTotal);
+        }
+
+        renderFixedExpenseCustomList(selectedItems);
+        renderSubscriptionPricePreview();
+      }
+
+      function renderFixedExpenseCustomList(selectedItems) {
+        const list = $("fixedExpenseCustomList");
+        if (!list) return;
+
+        const customItems = selectedItems.filter(function (item) {
+          return item.custom;
+        });
+
+        if (customItems.length === 0) {
+          list.innerHTML = '<span class="metric-note">직접 추가한 고정 지출이 없어요.</span>';
+          return;
+        }
+
+        list.innerHTML = customItems.map(function (item) {
+          const itemId = String(item.id || item.name);
+          return [
+            '<span class="fixed-expense-chip">',
+            escapeHtml(item.name) + " " + formatCurrency(item.amount),
+            '<button type="button" aria-label="' + escapeHtml(item.name) + ' 삭제" data-remove-fixed-expense="' + escapeHtml(itemId) + '">×</button>',
+            '</span>'
+          ].join("");
+        }).join("");
+      }
+
+      function getSelectedFixedExpenseItems() {
+        return normalizeFixedExpenseItems(fixedExpenseDraftItems);
+      }
+
+      function calculateFixedExpenseItemsTotal(items) {
+        return (items || []).reduce(function (sum, item) {
+          return sum + parsePositiveNumber(item.amount);
+        }, 0);
+      }
+
+      function normalizeFixedExpenseItems(items) {
+        return (Array.isArray(items) ? items : []).map(function (item) {
+          const source = item && typeof item === "object" ? item : {};
+          const name = String(source.name || "").trim();
+          const amount = parsePositiveNumber(source.amount || 0);
+          if (!name || amount <= 0) return null;
+
+          return {
+            id: source.id || "",
+            name: name,
+            amount: amount,
+            type: source.type || getFixedExpenseOptionType(name),
+            custom: Boolean(source.custom)
+          };
+        }).filter(Boolean);
+      }
+
+      function getFixedExpenseOptionType(name) {
+        const option = FIXED_EXPENSE_OPTIONS.find(function (item) {
+          return item.name === name;
+        });
+        if (option) return option.type;
+        return normalizeText(name).includes("구독") ? "subscription" : "custom";
+      }
+
+      function isSubscriptionExpenseItem(item) {
+        if (!item) return false;
+        const normalizedName = normalizeText(item.name);
+        return item.type === "subscription"
+          || normalizedName.includes("구독")
+          || normalizedName.includes("프리미엄")
+          || normalizedName.includes("넷플릭스")
+          || normalizedName.includes("라프텔")
+          || normalizedName.includes("스포티파이")
+          || normalizedName.includes("아이클라우드")
+          || normalizedName.includes("쿠팡와우")
+          || normalizedName.includes("유튜브");
+      }
+
+      function calculateSelectedSubscriptionTotal(selectedSubscriptions) {
+        return (selectedSubscriptions || []).reduce(function (sum, subscriptionName) {
+          return sum + Number(SUBSCRIPTION_PRICES[subscriptionName] || 0);
+        }, 0);
+      }
+
+      function getSelectedSubscriptionTotal() {
+        return calculateSelectedSubscriptionTotal(getCheckboxValues("subscriptions"));
+      }
+
+      function updateSubscriptionTotalFromSelection() {
+        const totalInput = $("subscriptionTotal");
+        if (totalInput) {
+          totalInput.value = getSelectedSubscriptionTotal();
+        }
+        renderSubscriptionPricePreview();
+      }
+
+      function renderSubscriptionPricePreview() {
+        const preview = $("subscriptionPricePreview");
+        if (!preview) return;
+
+        const selectedItems = getSelectedFixedExpenseItems();
+        const itemTotal = calculateFixedExpenseItemsTotal(selectedItems);
+        const manualTotal = parsePositiveNumber($("fixedExpense").value);
+        const subscriptionTotal = calculateFixedExpenseItemsTotal(selectedItems.filter(isSubscriptionExpenseItem));
+
+        $("subscriptionTotal").value = subscriptionTotal;
+        $("customSubscription").value = selectedItems.filter(function (item) {
+          return item.custom;
+        }).map(function (item) {
+          return item.name;
+        }).join(", ");
+
+        const selectedSubscriptionNames = selectedItems
+          .filter(isSubscriptionExpenseItem)
+          .map(function (item) {
+            return item.name + " " + formatCurrency(item.amount);
+          });
+
+        preview.textContent = selectedSubscriptionNames.length > 0
+          ? "구독비 " + formatCurrency(subscriptionTotal) + " 반영: " + selectedSubscriptionNames.join(" · ") + " · 총 고정 지출 " + formatCurrency(manualTotal)
+          : "선택한 고정 지출 합계: " + formatCurrency(itemTotal) + " · 현재 총액 " + formatCurrency(manualTotal);
+      }
+
+      function resetSettings() {
+        const confirmed = window.confirm("사용자 정보와 개인화 학습 데이터를 초기화할까요?");
+        if (!confirmed) return;
+
+        profile = null;
+        learningData = {};
+        removeStorageItem(STORAGE_KEYS.profile);
+        removeStorageItem(STORAGE_KEYS.learning);
+        renderAll();
+        showOnboarding("welcome");
+        showToast("설정이 초기화됐어요.");
+      }
+
+      function handleCsvFileChange(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = function () {
+          try {
+            const importedTransactions = convertCsvToTransactions(String(reader.result || ""));
+            if (importedTransactions.length === 0) {
+              showToast("추가할 거래내역을 찾지 못했어요.");
+              return;
+            }
+
+            transactions = transactions.concat(importedTransactions);
+            saveTransactions();
+            renderAll();
+            showToast(importedTransactions.length + "건의 거래내역을 추가했어요.");
+          } catch (error) {
+            window.alert(error.message || "CSV 파일을 읽는 중 문제가 생겼어요.");
+          } finally {
+            event.target.value = "";
+          }
+        };
+
+        reader.onerror = function () {
+          window.alert("CSV 파일을 읽을 수 없어요.");
+          event.target.value = "";
+        };
+
+        reader.readAsText(file, "utf-8");
+      }
+
+      function convertCsvToTransactions(csvText) {
+        const rows = parseCsv(csvText);
+        if (rows.length < 2) {
+          return [];
+        }
+
+        const headers = rows[0].map(normalizeHeader);
+        const dateIndex = findColumnIndex(headers, CSV_ALIASES.date);
+        const descriptionIndex = findColumnIndex(headers, CSV_ALIASES.description);
+        const amountIndex = findColumnIndex(headers, CSV_ALIASES.amount);
+
+        if (dateIndex === -1 || descriptionIndex === -1 || amountIndex === -1) {
+          throw new Error("CSV에서 날짜, 거래내용, 금액 컬럼을 찾지 못했어요.");
+        }
+
+        return rows.slice(1).map(function (row) {
+          const description = String(row[descriptionIndex] || "").trim();
+          const amount = Math.abs(parseMoney(row[amountIndex]));
+          const date = normalizeDate(row[dateIndex]);
+
+          if (!description || !Number.isFinite(amount) || amount <= 0) {
+            return null;
+          }
+
+          return createTransaction({
+            date: date,
+            description: description,
+            amount: amount,
+            source: "csv"
+          });
+        }).filter(Boolean);
+      }
+
+      function parseCsv(text) {
+        const rows = [];
+        let row = [];
+        let field = "";
+        let inQuotes = false;
+        const cleanText = String(text || "").replace(/^\uFEFF/, "");
+
+        for (let i = 0; i < cleanText.length; i += 1) {
+          const char = cleanText[i];
+          const nextChar = cleanText[i + 1];
+
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              field += '"';
+              i += 1;
+            } else {
+              inQuotes = !inQuotes;
+            }
+            continue;
+          }
+
+          if (char === "," && !inQuotes) {
+            row.push(field);
+            field = "";
+            continue;
+          }
+
+          if ((char === "\n" || char === "\r") && !inQuotes) {
+            if (char === "\r" && nextChar === "\n") {
+              i += 1;
+            }
+            row.push(field);
+            rows.push(row);
+            row = [];
+            field = "";
+            continue;
+          }
+
+          field += char;
+        }
+
+        row.push(field);
+        rows.push(row);
+
+        return rows.filter(function (currentRow) {
+          return currentRow.some(function (cell) {
+            return String(cell || "").trim() !== "";
+          });
+        });
+      }
+
+      function normalizeHeader(value) {
+        return normalizeText(value).replace(/[._-]/g, "");
+      }
+
+      function findColumnIndex(headers, aliases) {
+        const normalizedAliases = aliases.map(normalizeHeader);
+        return headers.findIndex(function (header) {
+          return normalizedAliases.includes(header);
+        });
+      }
+
+      function createTransaction(data) {
+        const classification = classifyTransaction(data.description);
+
+        return {
+          id: createId(),
+          date: normalizeDate(data.date),
+          description: data.description,
+          amount: Math.round(Number(data.amount) || 0),
+          category: data.category || classification.category,
+          confidence: data.category ? 1 : classification.confidence,
+          needsReview: data.category ? false : classification.needsReview,
+          dangerLevel: "safe",
+          warningMessage: "",
+          source: data.source || "manual",
+          createdAt: new Date().toISOString()
+        };
+      }
+
+      function classifyTransaction(description) {
+        const normalized = normalizeText(description);
+        const learnedCategory = findLearnedCategory(normalized);
+
+        if (learnedCategory) {
+          return {
+            category: learnedCategory,
+            confidence: 0.97,
+            needsReview: false,
+            source: "learning"
+          };
+        }
+
+        for (const category of CATEGORIES) {
+          const keywords = CATEGORY_KEYWORDS[category] || [];
+          const matchedKeyword = keywords.find(function (keyword) {
+            const normalizedKeyword = normalizeText(keyword);
+            return normalizedKeyword.length > 0 && normalized.includes(normalizedKeyword);
+          });
+
+          if (matchedKeyword) {
+            return {
+              category: category,
+              confidence: 0.9,
+              needsReview: false,
+              source: "keyword"
+            };
+          }
+        }
+
+        for (const rule of AMBIGUOUS_RULES) {
+          const matched = rule.keywords.some(function (keyword) {
+            return normalized.includes(normalizeText(keyword));
+          });
+
+          if (matched) {
+            return {
+              category: rule.category,
+              confidence: rule.confidence,
+              needsReview: true,
+              source: "ambiguous"
+            };
+          }
+        }
+
+        return {
+          category: "기타",
+          confidence: 0.2,
+          needsReview: true,
+          source: "fallback"
+        };
+      }
+
+      function normalizeText(value) {
+        return String(value || "")
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .replace(/[.,()[\]{}<>:;"'!?@#$%^&*_+=|\\/`~\-]/g, "");
+      }
+
+      function findLearnedCategory(normalizedDescription) {
+        const signatures = Object.keys(learningData);
+
+        for (const signature of signatures) {
+          if (signature.length < 2) continue;
+          if (normalizedDescription.includes(signature) || signature.includes(normalizedDescription)) {
+            return learningData[signature].category;
+          }
+        }
+
+        return null;
+      }
+
+      function learnCategoryFromUser(description, category) {
+        const signature = extractLearningSignature(description);
+        if (!signature) return;
+
+        learningData[signature] = {
+          category: category,
+          example: description,
+          updatedAt: new Date().toISOString()
+        };
+
+        saveLearningData();
+      }
+
+      function extractLearningSignature(description) {
+        const normalized = normalizeText(description).replace(/\d+/g, "");
+        const allKeywords = AMBIGUOUS_RULES.flatMap(function (rule) {
+          return rule.keywords;
+        }).concat(
+          Object.values(CATEGORY_KEYWORDS).flat()
+        ).map(normalizeText).sort(function (a, b) {
+          return b.length - a.length;
+        });
+
+        const matchedKeyword = allKeywords.find(function (keyword) {
+          return keyword.length >= 2 && normalized.includes(keyword);
+        });
+
+        if (matchedKeyword) return matchedKeyword;
+        return normalized.slice(0, 14);
+      }
+
+      function addSampleTransactions() {
+        const newTransactions = buildSampleTransactions();
+
+        transactions = transactions.concat(newTransactions);
+        saveTransactions();
+        renderAll();
+        showToast("샘플 거래내역을 추가했어요.");
+      }
+
+      function exploreWithSampleData() {
+        profile = createSampleProfile();
+        transactions = buildSampleTransactions();
+        saveProfile();
+        saveTransactions();
+        setTheme(profile.theme || "light");
+        hideOnboarding();
+        renderAll();
+        showToast("샘플 지갑 프로필로 둘러볼 수 있어요.");
+      }
+
+      function createSampleProfile() {
+        return migrateProfile({
+          name: "수리",
+          studentType: "대학생",
+          mainPurpose: "충동구매 방지",
+          monthlyAvailableMoney: 650000,
+          monthlySpendingLimit: 450000,
+          currentMoney: 180000,
+          dangerThreshold: 50000,
+          fixedExpense: 88900,
+          fixedExpenseItems: [
+            { name: "통신비", amount: 58000, type: "phone", custom: false },
+            { name: "유튜브 프리미엄", amount: 14900, type: "subscription", custom: false },
+            { name: "라프텔 프리미엄", amount: 14900, type: "subscription", custom: false },
+            { name: "아이클라우드+ 50GB", amount: 1100, type: "subscription", custom: false }
+          ],
+          subscriptions: ["유튜브 프리미엄", "라프텔 프리미엄", "아이클라우드+ 50GB"],
+          customSubscription: "",
+          subscriptionTotal: 30900,
+          targetReduceCategory: "카페",
+          warningTone: "보통",
+          dailyWarningLimit: 30000,
+          payday: "",
+          theme: "light",
+          isSample: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      }
+
+      function buildSampleTransactions() {
+        const sampleItems = [
+          ["스타벅스 대학로점", 6200, "카페", 1],
+          ["GS25 기숙사점", 4800, "편의점", 2],
+          ["쿠팡 로켓배송", 52900, null, 3],
+          ["배민 떡볶이", 18700, "배달", 5],
+          ["지하철 교통카드", 1450, "교통", 7],
+          ["Netflix monthly", 17000, "구독", 9],
+          ["교보문고 전공교재", 38500, "학업", 11],
+          ["이디야커피 시험기간", 5500, "카페", 13],
+          ["다이소 생활용품", 13200, "생필품", 14]
+        ];
+
+        const newTransactions = sampleItems.map(function (item) {
+          return createTransaction({
+            description: item[0],
+            amount: item[1],
+            category: item[2],
+            date: daysAgo(item[3]),
+            source: "sample"
+          });
+        });
+
+        return newTransactions;
+      }
+
+      function clearAllTransactions() {
+        const confirmed = window.confirm("저장된 거래내역을 모두 삭제할까요?");
+        if (!confirmed) return;
+
+        transactions = [];
+        saveTransactions();
+        clearSimulationResult();
+        renderAll();
+        showToast("거래내역을 모두 삭제했어요.");
+      }
+
+
+      function handleManualTransactionSubmit(event) {
+        event.preventDefault();
+
+        if (!profile) {
+          showOnboarding("welcome");
+          showToast("기본 정보를 먼저 저장해주세요.");
+          return;
+        }
+
+        const amount = parsePositiveNumber($("manualAmount").value);
+        const description = $("manualDescription").value.trim();
+        const category = $("manualCategory").value || "기타";
+        const date = $("manualDate").value || todayISO();
+
+        if (!amount || !description) {
+          showToast("금액과 거래내용을 입력해주세요.");
+          return;
+        }
+
+        const transaction = createTransaction({
+          date: date,
+          description: description,
+          amount: amount,
+          category: category,
+          source: "manual"
+        });
+
+        transactions.push(transaction);
+        profile.currentMoney = Math.round(Number(profile.currentMoney || 0) - amount);
+        profile.updatedAt = new Date().toISOString();
+
+        saveProfile();
+        saveTransactions();
+        $("manualTransactionForm").reset();
+        $("manualDate").value = todayISO();
+        renderAll();
+        const manualAnalytics = getAnalytics();
+        if (manualAnalytics.riskStatus === "danger" || manualAnalytics.riskStatus === "caution") {
+          triggerDangerAlarm(getAlarmMessage(manualAnalytics.riskStatus, "방금 추가한 소비로 지출 상태가 올라갔어요."), manualAnalytics.riskStatus);
+        }
+        showToast("소비내역을 직접 추가했어요.");
+      }
+
+
+      function getServiceCards() {
+        const track = $("serviceTrack");
+        return track ? Array.from(track.querySelectorAll(".service-card")) : [];
+      }
+
+      function moveServiceSlide(direction) {
+        const cards = getServiceCards();
+        if (!cards.length) return;
+
+        serviceSlideIndex = Math.min(cards.length - 1, Math.max(0, serviceSlideIndex + direction));
+        renderServiceCarousel();
+      }
+
+      function renderServiceCarousel() {
+        const track = $("serviceTrack");
+        const cards = getServiceCards();
+        if (!track || !cards.length) return;
+
+        serviceSlideIndex = Math.min(cards.length - 1, Math.max(0, serviceSlideIndex));
+        track.style.setProperty("--service-index", serviceSlideIndex);
+
+        cards.forEach(function (card, index) {
+          card.setAttribute("aria-hidden", index === serviceSlideIndex ? "false" : "true");
+        });
+
+        const previousButton = $("servicePrevBtn");
+        const nextButton = $("serviceNextBtn");
+        const indicator = $("serviceSlideIndicator");
+        const dots = $("serviceProgressDots");
+
+        if (previousButton) previousButton.disabled = serviceSlideIndex === 0;
+        if (nextButton) nextButton.disabled = serviceSlideIndex === cards.length - 1;
+        if (indicator) indicator.textContent = (serviceSlideIndex + 1) + " / " + cards.length;
+        if (dots) {
+          dots.innerHTML = cards.map(function (_, index) {
+            return '<span class="service-dot' + (index === serviceSlideIndex ? ' active' : '') + '"></span>';
+          }).join("");
+        }
+      }
+
+      function updateServiceBriefResult() {
+        const result = $("serviceBriefResult");
+        if (!result) return;
+
+        const analytics = getAnalytics();
+        const profileInfo = getSafeProfile();
+        const limit = Number(profileInfo.monthlySpendingLimit || 0);
+        const dangerLine = limit * 0.8;
+        const dangerRoom = dangerLine > 0 ? Math.max(0, dangerLine - analytics.totalSpent) : 0;
+        const budgetRoom = limit > 0 ? Math.max(0, limit - analytics.totalSpent) : 0;
+        const todayRoom = Number(profileInfo.dailyWarningLimit || 0) > 0
+          ? Math.max(0, Number(profileInfo.dailyWarningLimit || 0) - analytics.todaySpent)
+          : 0;
+        const plan = calculateSafeSpendingPlan(0);
+        const status = analytics.riskStatus || "safe";
+
+        result.innerHTML = [
+          '<span class="badge ' + status + '">' + STATUS_LABELS[status] + '</span>',
+          '<ul>',
+          '<li>현재 사용 가능 금액: ' + formatCurrency(profileInfo.currentMoney) + '</li>',
+          '<li>월 지출 한도까지 남은 금액: ' + formatCurrency(budgetRoom) + '</li>',
+          '<li>위험 구간 80%까지 남은 금액: ' + formatCurrency(dangerRoom) + '</li>',
+          '<li>오늘 더 써도 되는 기준: ' + (Number(profileInfo.dailyWarningLimit || 0) > 0 ? formatCurrency(todayRoom) : '하루 기준 미설정') + '</li>',
+          '<li>월급일까지 하루 안전 소비액: ' + formatCurrency(plan.safeDaily) + ' / 일</li>',
+          '</ul>'
+        ].join("");
+      }
+
+      function syncQuickProfileInputs() {
+        const profileInfo = getSafeProfile();
+        const fields = [
+          ["quickCurrentMoney", profileInfo.currentMoney],
+          ["quickMonthlyLimit", profileInfo.monthlySpendingLimit],
+          ["quickDailyLimit", profileInfo.dailyWarningLimit]
+        ];
+
+        fields.forEach(function (entry) {
+          const input = $(entry[0]);
+          if (!input || document.activeElement === input) return;
+          input.value = Number(entry[1] || 0) > 0 ? Math.round(Number(entry[1] || 0)) : "";
+        });
+      }
+
+      function handleQuickProfileSubmit(event) {
+        event.preventDefault();
+
+        if (!profile) {
+          showOnboarding("welcome");
+          showToast("기본 정보를 먼저 저장해주세요.");
+          return;
+        }
+
+        profile.currentMoney = parsePositiveNumber($("quickCurrentMoney").value);
+        profile.monthlySpendingLimit = parsePositiveNumber($("quickMonthlyLimit").value);
+        profile.dailyWarningLimit = parsePositiveNumber($("quickDailyLimit").value);
+        if (Number(profile.monthlyAvailableMoney || 0) < Number(profile.currentMoney || 0)) {
+          profile.monthlyAvailableMoney = Number(profile.currentMoney || 0);
+        }
+        profile.updatedAt = new Date().toISOString();
+
+        saveProfile();
+        renderAll();
+        showToast("잔액과 한도를 업데이트했어요.");
+      }
+
+      function calculateGoalPlan() {
+        const amount = parsePositiveNumber(($("goalAmount") || {}).value || 0);
+        const saved = parsePositiveNumber(($("goalSaved") || {}).value || 0);
+        const dateValue = (($("goalDate") || {}).value || "");
+        const remaining = Math.max(0, amount - saved);
+        const days = dateValue ? calculateDaysUntilPayday(dateValue) : 30;
+        const dailySave = days > 0 ? Math.ceil(remaining / days) : remaining;
+        const profileInfo = getSafeProfile();
+        const currentMoneyAfterGoal = Math.max(0, Number(profileInfo.currentMoney || 0) - remaining);
+
+        return {
+          amount: amount,
+          saved: saved,
+          remaining: remaining,
+          days: days,
+          dailySave: dailySave,
+          currentMoneyAfterGoal: currentMoneyAfterGoal,
+          dateValue: dateValue
+        };
+      }
+
+      function updateGoalResult() {
+        const result = $("goalResult");
+        if (!result) return;
+
+        const plan = calculateGoalPlan();
+        if (!plan.amount) {
+          result.textContent = "목표 금액을 입력하면 하루 저축 필요액이 나와요.";
+          return;
+        }
+
+        result.innerHTML = [
+          '<strong>' + (plan.dateValue || '30일 뒤') + '까지 ' + formatCurrency(plan.remaining) + ' 더 모으면 돼요.</strong>',
+          '<ul>',
+          '<li>남은 기간: ' + plan.days + '일</li>',
+          '<li>하루 저축 필요액: ' + formatCurrency(plan.dailySave) + ' / 일</li>',
+          '<li>목표 금액을 빼고 남는 현재 돈: ' + formatCurrency(plan.currentMoneyAfterGoal) + '</li>',
+          '</ul>'
+        ].join("");
+      }
+
+
+      function triggerDangerAlarm(message, level) {
+        if (level !== "danger" && level !== "caution") return;
+
+        const alarm = $("dangerAlarm");
+        const alarmMessage = $("dangerAlarmMessage");
+        if (alarmMessage) alarmMessage.textContent = message || "위험 구간에 가까워졌어요.";
+        if (alarm) {
+          alarm.classList.remove("show");
+          void alarm.offsetWidth;
+          alarm.classList.add("show");
+          window.setTimeout(function () {
+            alarm.classList.remove("show");
+          }, 1300);
+        }
+
+        playDangerBeep(level);
+        if (navigator.vibrate) navigator.vibrate(level === "danger" ? [160, 80, 160] : [90]);
+      }
+
+      function playDangerBeep(level) {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const context = new AudioContext();
+          const pattern = level === "danger" ? [740, 880, 740] : [620, 620];
+          const now = context.currentTime;
+
+          pattern.forEach(function (frequency, index) {
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(frequency, now + index * 0.16);
+            gain.gain.setValueAtTime(0.001, now + index * 0.16);
+            gain.gain.exponentialRampToValueAtTime(0.11, now + index * 0.16 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.16 + 0.12);
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+            oscillator.start(now + index * 0.16);
+            oscillator.stop(now + index * 0.16 + 0.13);
+          });
+
+          window.setTimeout(function () {
+            context.close();
+          }, 900);
+        } catch (error) {
+          // Some browsers block audio until a user gesture. The visual alarm still works.
+        }
+      }
+
+      function getAlarmMessage(level, contextText) {
+        if (level === "danger") return "위험 구간 진입! " + (contextText || "결제 전 한 번 멈춰야 해요.");
+        if (level === "caution") return "주의 구간이에요. " + (contextText || "지갑 속도가 빨라졌어요.");
+        return "안전 구간입니다.";
+      }
+
+      function handleServiceSimulationSubmit(event) {
+        event.preventDefault();
+
+        if (!profile) {
+          showOnboarding("welcome");
+          showToast("기본 정보를 먼저 저장해주세요.");
+          return;
+        }
+
+        const amount = parsePositiveNumber($("serviceSimAmount").value);
+        const description = $("serviceSimDescription").value.trim();
+        const selectedCategory = $("serviceSimCategory").value;
+        const need = $("serviceSimNeed").value;
+
+        if (!amount || !description) {
+          showToast("결제 예정 금액과 내용을 입력해주세요.");
+          return;
+        }
+
+        const classification = classifyTransaction(description);
+        const category = selectedCategory === "auto" ? classification.category : selectedCategory;
+        const analytics = getAnalytics();
+        const profileInfo = getSafeProfile();
+        const afterMoney = Number(profileInfo.currentMoney || 0) - amount;
+        const afterTotalSpent = analytics.totalSpent + amount;
+        const dangerLine = Number(profileInfo.monthlySpendingLimit || 0) * 0.8;
+        const remainingToDanger = dangerLine > 0 ? Math.max(0, dangerLine - afterTotalSpent) : 0;
+        const afterBudgetUsage = Number(profileInfo.monthlySpendingLimit || 0) > 0
+          ? afterTotalSpent / Number(profileInfo.monthlySpendingLimit || 0)
+          : 0;
+        const level = calculateSimulationLevel(amount, afterMoney, afterBudgetUsage, category, need, analytics);
+        const plan = calculateSafeSpendingPlan(amount);
+
+        const messages = [
+          "결제 후 현재 사용 가능 금액: " + formatCurrency(afterMoney),
+          dangerLine > 0
+            ? "위험 구간 80%까지 남은 금액: " + formatCurrency(remainingToDanger)
+            : "월 지출 한도를 설정하면 위험 구간까지 남은 금액을 더 정확히 볼 수 있어요.",
+          "결제 후 월급일까지 하루 안전 소비액: " + formatCurrency(plan.safeDailyAfterSpend) + " / 일",
+          "월급일까지 남은 날: " + plan.days + "일"
+        ];
+
+        if (need === "충동구매 같음") {
+          messages.push("충동구매라면 10분만 보류해도 지갑이 숨을 쉽니다.");
+        }
+
+        if (level === "caution" || level === "danger") {
+          messages.push("위험 경보가 울렸어요. 이 결제는 대시보드 기준을 다시 확인하는 게 좋아요.");
+          triggerDangerAlarm(getAlarmMessage(level, "결제 후 위험 구간까지 " + formatCurrency(remainingToDanger) + " 남아요."), level);
+        }
+
+        renderServiceSimulationResult(level, messages);
+      }
+
+      function renderServiceSimulationResult(level, messages) {
+        const result = $("serviceSimulationResult");
+        if (!result) return;
+
+        result.innerHTML = [
+          '<span class="badge ' + level + '">' + STATUS_LABELS[level] + '</span>',
+          '<ul>',
+          messages.map(function (message) {
+            return "<li>" + escapeHtml(message) + "</li>";
+          }).join(""),
+          '</ul>'
+        ].join("");
+
+        result.classList.remove("hidden");
+      }
+
+      function getPlannerInputs() {
+        const reserveInput = $("plannerReserve");
+        const paydayInput = $("plannerPayday");
+        const profileInfo = getSafeProfile();
+
+        return {
+          payday: paydayInput && paydayInput.value ? paydayInput.value : (profileInfo.payday || ""),
+          reserve: reserveInput && reserveInput.value !== "" ? parsePositiveNumber(reserveInput.value) : Math.round(Number(profileInfo.fixedExpense || 0))
+        };
+      }
+
+      function calculateDaysUntilPayday(paydayValue) {
+        if (!paydayValue) {
+          const now = new Date();
+          const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          return Math.max(1, Math.ceil((lastDay - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000));
+        }
+
+        const target = new Date(paydayValue + "T00:00:00");
+        const today = new Date(todayISO() + "T00:00:00");
+        const diff = Math.ceil((target - today) / 86400000);
+        return Math.max(1, diff);
+      }
+
+      function calculateSafeSpendingPlan(extraSpend) {
+        const analytics = getAnalytics();
+        const profileInfo = getSafeProfile();
+        const inputs = getPlannerInputs();
+        const days = calculateDaysUntilPayday(inputs.payday);
+        const currentMoneyAfterSpend = Number(profileInfo.currentMoney || 0) - parsePositiveNumber(extraSpend || 0);
+        const totalSpentAfterSpend = analytics.totalSpent + parsePositiveNumber(extraSpend || 0);
+        const dangerLine = Number(profileInfo.monthlySpendingLimit || 0) * 0.8;
+        const moneyRoom = Math.max(0, currentMoneyAfterSpend - inputs.reserve);
+        const budgetRoom = dangerLine > 0 ? Math.max(0, dangerLine - totalSpentAfterSpend) : moneyRoom;
+        const safeDaily = Math.floor(Math.min(moneyRoom, budgetRoom) / days);
+
+        return {
+          days: days,
+          reserve: inputs.reserve,
+          safeDaily: safeDaily,
+          safeDailyAfterSpend: safeDaily,
+          moneyRoom: moneyRoom,
+          budgetRoom: budgetRoom,
+          dangerLine: dangerLine
+        };
+      }
+
+      function updatePlannerResult() {
+        const result = $("plannerResult");
+        if (!result) return;
+
+        const profileInfo = getSafeProfile();
+        if ($("plannerPayday") && !$("plannerPayday").value && profileInfo.payday) {
+          $("plannerPayday").value = profileInfo.payday;
+        }
+        const plan = calculateSafeSpendingPlan(0);
+        const inputs = getPlannerInputs();
+        const paydayText = inputs.payday ? inputs.payday : "이번 달 말";
+
+        result.innerHTML = [
+          "<strong>" + paydayText + "까지 " + plan.days + "일 남았어요.</strong>",
+          "<ul>",
+          "<li>목표로 남길 금액: " + formatCurrency(plan.reserve) + "</li>",
+          "<li>하루 안전 소비액: " + formatCurrency(plan.safeDaily) + " / 일</li>",
+          "<li>목표 달성 여유금: " + formatCurrency(plan.moneyRoom) + "</li>",
+          "<li>위험 구간까지 남은 예산: " + formatCurrency(plan.budgetRoom) + "</li>",
+          "</ul>"
+        ].join("");
+      }
+
+      function handleSimulationSubmit(event) {
+        event.preventDefault();
+
+        if (!profile) {
+          showOnboarding("welcome");
+          showToast("기본 정보를 먼저 저장해주세요.");
+          return;
+        }
+
+        const amount = parsePositiveNumber($("simAmount").value);
+        const description = $("simDescription").value.trim();
+        const selectedCategory = $("simCategory").value;
+        const need = $("simNeed").value;
+
+        if (!amount || !description) {
+          showToast("결제 예정 금액과 내용을 입력해주세요.");
+          return;
+        }
+
+        const classification = classifyTransaction(description);
+        const category = selectedCategory === "auto" ? classification.category : selectedCategory;
+        const confidence = selectedCategory === "auto" ? classification.confidence : 1;
+        const needsReview = selectedCategory === "auto" ? classification.needsReview : false;
+        const analytics = getAnalytics();
+        const afterMoney = Number(profile.currentMoney || 0) - amount;
+        const spendingLimit = Number(profile.monthlySpendingLimit || 0);
+        const afterBudgetUsage = spendingLimit > 0 ? (analytics.totalSpent + amount) / spendingLimit : 0;
+        const level = calculateSimulationLevel(amount, afterMoney, afterBudgetUsage, category, need, analytics);
+        const messages = createSimulationMessages(amount, afterMoney, afterBudgetUsage, category, need, analytics);
+
+        simulationDraft = {
+          amount: amount,
+          description: description,
+          category: category,
+          confidence: confidence,
+          needsReview: needsReview,
+          need: need,
+          dangerLevel: level,
+          messages: messages
+        };
+
+        if (level === "caution" || level === "danger") {
+          triggerDangerAlarm(getAlarmMessage(level, "결제 확정 전에 한 번 더 확인해요."), level);
+        }
+        renderSimulationResult(level, messages);
+      }
+
+      function calculateSimulationLevel(amount, afterMoney, afterBudgetUsage, category, need, analytics) {
+        const threshold = getDangerThreshold();
+        const profileInfo = getSafeProfile();
+        const todayTotalAfterSpend = getTodaySpent(analytics) + amount;
+        let level = "safe";
+
+        if (amount >= threshold || afterBudgetUsage >= 0.8 || need === "충동구매 같음") {
+          level = "caution";
+        }
+
+        if (
+          amount >= threshold * 1.4 ||
+          afterBudgetUsage >= 0.9 ||
+          afterMoney < 0 ||
+          (profileInfo.targetReduceCategory === category && amount >= threshold * 0.25) ||
+          (profileInfo.dailyWarningLimit > 0 && todayTotalAfterSpend >= profileInfo.dailyWarningLimit)
+        ) {
+          level = "danger";
+        }
+
+        return level;
+      }
+
+      function createSimulationMessages(amount, afterMoney, afterBudgetUsage, category, need, analytics) {
+        const messages = [];
+        const profileInfo = getSafeProfile();
+        const currentMoney = Number(profileInfo.currentMoney || 0);
+        const todayTotalAfterSpend = getTodaySpent(analytics) + amount;
+
+        messages.push("이 결제를 하면 현재 사용 가능 금액이 " + formatCurrency(afterMoney) + "이 돼요.");
+
+        const dangerLine = Number(profileInfo.monthlySpendingLimit || 0) * 0.8;
+        const remainingToDanger = dangerLine > 0 ? Math.max(0, dangerLine - (analytics.totalSpent + amount)) : 0;
+        const planAfterSpend = calculateSafeSpendingPlan(amount);
+
+        if (dangerLine > 0) {
+          messages.push("위험 구간 80%까지 남은 금액은 " + formatCurrency(remainingToDanger) + "이에요.");
+        }
+
+        messages.push("월급일/이번 달 말까지 하루 안전 소비액은 약 " + formatCurrency(planAfterSpend.safeDailyAfterSpend) + "입니다.");
+
+        if (need === "충동구매 같음") {
+          messages.push(createToneMessage("impulse", category));
+        } else if (need === "꼭 필요") {
+          messages.push("꼭 필요한 소비라면 괜찮아요. 대신 이번 주 카페 지출을 줄여보세요.");
+        } else {
+          messages.push("있으면 좋은 소비라면 장바구니에 잠깐 맡겨두는 것도 좋아요.");
+        }
+
+        if (afterBudgetUsage >= 0.8) {
+          messages.push(createToneMessage("budgetHigh", category));
+        }
+
+        if (profileInfo.targetReduceCategory === category) {
+          messages.push(createToneMessage("targetCategory", category));
+        }
+
+        if (profileInfo.dailyWarningLimit > 0 && todayTotalAfterSpend >= profileInfo.dailyWarningLimit) {
+          messages.push("오늘 지출이 설정한 하루 기준 " + formatCurrency(profileInfo.dailyWarningLimit) + "을 넘었어요.");
+        }
+
+        if (category === "구독") {
+          messages.push("구독 성격의 고정 지출이 매달 빠져나가고 있어요. 현재 등록한 금액은 " + formatCurrency(profileInfo.subscriptionTotal) + "입니다. 실제로 쓰는 서비스인지 점검해보세요.");
+        }
+
+        if (profileInfo.fixedExpense > 0) {
+          messages.push("이번 달 고정 지출 예상액 " + formatCurrency(profileInfo.fixedExpense) + "도 함께 남겨두는 게 좋아요.");
+        }
+
+        return uniqueMessages(messages);
+      }
+
+      function renderSimulationResult(level, messages) {
+        const badge = $("simulationBadge");
+        badge.className = "badge " + level;
+        badge.textContent = STATUS_LABELS[level];
+
+        $("simulationMessages").innerHTML = messages.map(function (message) {
+          return "<li>" + escapeHtml(message) + "</li>";
+        }).join("");
+
+        $("simulationResult").classList.remove("hidden");
+      }
+
+      function confirmSimulatedSpend() {
+        if (!simulationDraft || !profile) return;
+
+        const transaction = createTransaction({
+          date: todayISO(),
+          description: simulationDraft.description,
+          amount: simulationDraft.amount,
+          category: simulationDraft.category,
+          source: "simulator"
+        });
+
+        transaction.confidence = simulationDraft.confidence;
+        transaction.needsReview = simulationDraft.needsReview;
+        transactions.push(transaction);
+
+        profile.currentMoney = Math.round(Number(profile.currentMoney || 0) - simulationDraft.amount);
+        profile.updatedAt = new Date().toISOString();
+        saveProfile();
+        saveTransactions();
+        $("simulationForm").reset();
+        $("simCategory").value = "auto";
+        clearSimulationResult();
+        renderAll();
+        showToast("결제가 거래내역에 추가됐어요.");
+      }
+
+      function clearSimulationResult() {
+        simulationDraft = null;
+        $("simulationResult").classList.add("hidden");
+        $("simulationMessages").innerHTML = "";
+      }
+
+      function updateTransactionCategory(id, category) {
+        const transaction = transactions.find(function (item) {
+          return item.id === id;
+        });
+
+        if (!transaction || !CATEGORIES.includes(category)) return;
+
+        transaction.category = category;
+        transaction.confidence = 1;
+        transaction.needsReview = false;
+        learnCategoryFromUser(transaction.description, category);
+        saveTransactions();
+        renderAll();
+        showToast("카테고리를 학습했어요. 다음 비슷한 거래에 먼저 적용합니다.");
+      }
+
+      function deleteTransaction(id) {
+        transactions = transactions.filter(function (transaction) {
+          return transaction.id !== id;
+        });
+        saveTransactions();
+        renderAll();
+        showToast("거래내역을 삭제했어요.");
+      }
+
+      function renderAll() {
+        const analytics = getAnalytics();
+        updateTransactionWarnings(analytics);
+        renderMetrics(analytics);
+        renderDashboardCarousels();
+        renderProgress(analytics);
+        renderCategoryChart(analytics);
+        renderAnalysisReport(analytics);
+        renderTransactionTable(analytics);
+        updatePlannerResult();
+        updateServiceBriefResult();
+        syncQuickProfileInputs();
+        updateGoalResult();
+        renderServiceCarousel();
+      }
+
+      function getAnalytics() {
+        const activeProfile = getSafeProfile();
+        const currentMonthTransactions = transactions.filter(isCurrentMonthTransaction);
+        const categoryTotals = CATEGORIES.reduce(function (result, category) {
+          result[category] = 0;
+          return result;
+        }, {});
+        const dailyTotals = {};
+
+        let totalSpent = 0;
+
+        currentMonthTransactions.forEach(function (transaction) {
+          const amount = Number(transaction.amount || 0);
+          totalSpent += amount;
+          categoryTotals[transaction.category] = (categoryTotals[transaction.category] || 0) + amount;
+          const dateKey = normalizeDate(transaction.date);
+          dailyTotals[dateKey] = (dailyTotals[dateKey] || 0) + amount;
+        });
+
+        const topCategoryEntry = Object.entries(categoryTotals).sort(function (a, b) {
+          return b[1] - a[1];
+        })[0] || ["없음", 0];
+
+        const budgetUsage = activeProfile.monthlySpendingLimit > 0 ? totalSpent / activeProfile.monthlySpendingLimit : 0;
+        const todaySpent = dailyTotals[todayISO()] || 0;
+        const dailyUsage = activeProfile.dailyWarningLimit > 0 ? todaySpent / activeProfile.dailyWarningLimit : 0;
+        const riskStatus = getRiskStatus(budgetUsage);
+
+        return {
+          profile: activeProfile,
+          currentMonthTransactions: currentMonthTransactions,
+          transactionCount: currentMonthTransactions.length,
+          categoryTotals: categoryTotals,
+          totalSpent: totalSpent,
+          topCategory: topCategoryEntry[1] > 0 ? topCategoryEntry[0] : "없음",
+          topCategoryAmount: topCategoryEntry[1],
+          budgetUsage: budgetUsage,
+          todaySpent: todaySpent,
+          dailyUsage: dailyUsage,
+          dailyTotals: dailyTotals,
+          riskStatus: riskStatus
+        };
+      }
+
+      function getSafeProfile() {
+        return profile ? migrateProfile(profile) : createEmptyProfile();
+      }
+
+      function renderMetrics(analytics) {
+        $("totalSpentValue").textContent = formatCurrency(analytics.totalSpent);
+        $("transactionCountNote").textContent = "거래 " + analytics.transactionCount + "건";
+        $("remainingMoneyValue").textContent = formatCurrency(analytics.profile.currentMoney);
+        $("profileNameNote").textContent = analytics.profile.name + "님의 사용 가능 금액";
+        $("budgetUsageValue").textContent = formatPercent(analytics.budgetUsage);
+        $("budgetAmountNote").textContent = "월 지출 한도 " + formatCurrency(analytics.profile.monthlySpendingLimit);
+        $("monthlyAvailableValue").textContent = formatCurrency(analytics.profile.monthlyAvailableMoney);
+        $("monthlyAvailableNote").textContent = analytics.profile.name + "님의 이번 달 사용 가능 금액";
+        $("topCategoryValue").textContent = analytics.topCategory === "없음" ? "없음" : CATEGORY_EMOJI[analytics.topCategory] + " " + analytics.topCategory;
+        $("topCategoryAmountNote").textContent = analytics.topCategoryAmount > 0 ? formatCurrency(analytics.topCategoryAmount) : "아직 분석 전";
+
+        const riskBadge = $("riskStatusBadge");
+        riskBadge.className = "badge " + analytics.riskStatus;
+        riskBadge.textContent = STATUS_LABELS[analytics.riskStatus];
+        $("riskStatusNote").textContent = getRiskStatusDescription(analytics.riskStatus) + (analytics.profile.isSample ? " · 샘플 데이터" : "");
+        renderProfileInsights(analytics);
+      }
+
+      function renderProfileInsights(analytics) {
+        const fixedExpenseNames = (analytics.profile.fixedExpenseItems || []).map(function (item) {
+          return item.name + " " + formatCurrency(item.amount);
+        });
+
+        $("insightFixedExpense").textContent = "월 고정 지출 예상액 " + formatCurrency(analytics.profile.fixedExpense);
+        $("insightSubscription").textContent = "선택한 항목 " + fixedExpenseNames.length + "개";
+        $("insightSubscriptionList").textContent = fixedExpenseNames.length > 0 ? fixedExpenseNames.join(", ") : "등록된 항목 없음";
+        const paydayInsight = $("insightPaydayStatus");
+        if (paydayInsight) {
+          const daysToPayday = calculateDaysUntilPayday(analytics.profile.payday || "");
+          paydayInsight.textContent = analytics.profile.payday ? analytics.profile.payday + "까지 " + daysToPayday + "일" : "월급일 미설정";
+        }
+        $("insightDailyStatus").textContent = getDailyStatusText(analytics);
+        // Future extension: wire this card to a savings-goal flow without changing the onboarding profile.
+        $("insightGoalCta").textContent = "저축 목표 추가하기";
+      }
+
+      function renderDashboardCarousels() {
+        dashboardMetricIndex = renderDashboardCarousel($("metricGrid"), ".metric-card", dashboardMetricIndex);
+        dashboardInsightIndex = renderDashboardCarousel($("profileInsights"), ".profile-chip", dashboardInsightIndex);
+      }
+
+      function renderDashboardCarousel(container, itemSelector, activeIndex) {
+        if (!container) return 0;
+
+        const items = Array.from(container.querySelectorAll(itemSelector));
+        if (items.length === 0) return 0;
+
+        const safeIndex = wrapIndex(activeIndex, items.length);
+        const previousIndex = wrapIndex(safeIndex - 1, items.length);
+        const nextIndex = wrapIndex(safeIndex + 1, items.length);
+
+        items.forEach(function (item, index) {
+          const position = index === safeIndex
+            ? "active"
+            : index === previousIndex
+              ? "prev"
+              : index === nextIndex
+                ? "next"
+                : "hidden";
+
+          item.classList.remove("is-active", "is-prev", "is-next", "is-hidden");
+          item.classList.add("is-" + position);
+          item.dataset.carouselPosition = position;
+          item.tabIndex = position === "hidden" ? -1 : 0;
+          item.setAttribute("role", "button");
+          item.setAttribute("aria-label", getCarouselCardLabel(item, position));
+        });
+
+        return safeIndex;
+      }
+
+      function handleDashboardCarouselClick(event, carouselType) {
+        const config = getDashboardCarouselConfig(carouselType);
+        if (!config) return;
+
+        const card = event.target.closest(config.itemSelector);
+        if (!card || !config.container.contains(card)) return;
+
+        const items = Array.from(config.container.querySelectorAll(config.itemSelector));
+        const clickedIndex = items.indexOf(card);
+        if (clickedIndex === -1 || card.classList.contains("is-hidden") || card.classList.contains("is-active")) return;
+
+        setDashboardCarouselIndex(carouselType, clickedIndex);
+      }
+
+      function handleDashboardCarouselKey(event, carouselType) {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight" && event.key !== "Enter" && event.key !== " ") return;
+
+        const config = getDashboardCarouselConfig(carouselType);
+        if (!config) return;
+
+        const card = event.target.closest(config.itemSelector);
+        if (!card || !config.container.contains(card)) return;
+
+        event.preventDefault();
+
+        if (event.key === "ArrowLeft") {
+          setDashboardCarouselIndex(carouselType, config.activeIndex - 1);
+          return;
+        }
+
+        if (event.key === "ArrowRight") {
+          setDashboardCarouselIndex(carouselType, config.activeIndex + 1);
+          return;
+        }
+
+        if (!card.classList.contains("is-active")) {
+          const items = Array.from(config.container.querySelectorAll(config.itemSelector));
+          setDashboardCarouselIndex(carouselType, items.indexOf(card));
+        }
+      }
+
+      function getDashboardCarouselConfig(carouselType) {
+        if (carouselType === "metric") {
+          return {
+            container: $("metricGrid"),
+            itemSelector: ".metric-card",
+            activeIndex: dashboardMetricIndex
+          };
+        }
+
+        if (carouselType === "insight") {
+          return {
+            container: $("profileInsights"),
+            itemSelector: ".profile-chip",
+            activeIndex: dashboardInsightIndex
+          };
+        }
+
+        return null;
+      }
+
+      function setDashboardCarouselIndex(carouselType, nextIndex) {
+        const config = getDashboardCarouselConfig(carouselType);
+        if (!config) return;
+
+        const count = config.container.querySelectorAll(config.itemSelector).length;
+        const normalizedIndex = wrapIndex(nextIndex, count);
+        const direction = getCarouselMoveDirection(config.activeIndex, normalizedIndex, count);
+
+        if (carouselType === "metric") {
+          dashboardMetricIndex = normalizedIndex;
+        } else if (carouselType === "insight") {
+          dashboardInsightIndex = normalizedIndex;
+        }
+
+        renderDashboardCarousels();
+        playDashboardCarouselAnimation(config.container, direction);
+      }
+
+      function getCarouselMoveDirection(currentIndex, nextIndex, count) {
+        if (!count || currentIndex === nextIndex) return "next";
+        if (wrapIndex(currentIndex + 1, count) === nextIndex) return "next";
+        if (wrapIndex(currentIndex - 1, count) === nextIndex) return "prev";
+        return nextIndex > currentIndex ? "next" : "prev";
+      }
+
+      function playDashboardCarouselAnimation(container, direction) {
+        const key = container.id || "carousel";
+        window.clearTimeout(carouselAnimationTimers[key]);
+        container.classList.remove("carousel-slide-next", "carousel-slide-prev");
+        void container.offsetWidth;
+        container.classList.add(direction === "prev" ? "carousel-slide-prev" : "carousel-slide-next");
+        carouselAnimationTimers[key] = window.setTimeout(function () {
+          container.classList.remove("carousel-slide-next", "carousel-slide-prev");
+        }, 420);
+      }
+
+      function getCarouselCardLabel(item, position) {
+        const title = item.querySelector(".metric-title, span");
+        const label = title ? title.textContent.trim() : "요약 카드";
+        if (position === "active") return label + " 현재 카드";
+        if (position === "prev") return label + " 이전 카드로 이동";
+        if (position === "next") return label + " 다음 카드로 이동";
+        return label;
+      }
+
+      function wrapIndex(index, length) {
+        if (!length) return 0;
+        return ((index % length) + length) % length;
+      }
+
+      function renderProgress(analytics) {
+        const budgetWidth = clampPercent(analytics.budgetUsage * 100);
+        const dailyWidth = clampPercent(analytics.dailyUsage * 100);
+        const budgetFill = $("budgetProgressFill");
+        const dailyFill = $("dailyProgressFill");
+
+        $("budgetProgressLabel").textContent = formatPercent(analytics.budgetUsage);
+        budgetFill.style.width = budgetWidth + "%";
+        budgetFill.style.background = getStatusColor(analytics.riskStatus);
+
+        $("dailyProgressLabel").textContent = analytics.profile.dailyWarningLimit > 0 ? formatPercent(analytics.dailyUsage) : "미설정";
+        dailyFill.style.width = dailyWidth + "%";
+        dailyFill.style.background = analytics.dailyUsage >= 1 ? "var(--red)" : "linear-gradient(90deg, #ff8fb3, #58aaf7)";
+      }
+
+      function getDailyStatusText(analytics) {
+        if (!analytics.profile.dailyWarningLimit) return "하루 기준 미설정";
+
+        const base = "오늘 " + formatCurrency(analytics.todaySpent) + " / " + formatCurrency(analytics.profile.dailyWarningLimit);
+        return analytics.todaySpent >= analytics.profile.dailyWarningLimit
+          ? base + " · 기준 초과"
+          : base + " · 기준 이내";
+      }
+
+      function renderCategoryChart(analytics) {
+        const entries = Object.entries(analytics.categoryTotals)
+          .filter(function (entry) {
+            return entry[1] > 0;
+          })
+          .sort(function (a, b) {
+            return b[1] - a[1];
+          });
+
+        if (entries.length === 0) {
+          $("categoryChart").innerHTML = '<div class="empty-state">분석할 거래내역이 없어요.</div>';
+          return;
+        }
+
+        const maxAmount = entries[0][1] || 1;
+
+        $("categoryChart").innerHTML = entries.map(function (entry) {
+          const category = entry[0];
+          const amount = entry[1];
+          const width = Math.max(8, (amount / maxAmount) * 100);
+
+          return [
+            '<div class="bar-row">',
+            '<div class="bar-name">' + CATEGORY_EMOJI[category] + " " + escapeHtml(category) + '</div>',
+            '<div class="bar-track"><div class="bar-fill" style="width: ' + width.toFixed(1) + '%"></div></div>',
+            '<div class="bar-value">' + formatCurrency(amount) + '</div>',
+            '</div>'
+          ].join("");
+        }).join("");
+      }
+
+      function renderAnalysisReport(analytics) {
+        const topSentence = analytics.topCategory === "없음"
+          ? "아직 가장 많이 쓴 카테고리가 없어요."
+          : "가장 많이 쓴 카테고리는 " + analytics.topCategory + "이고, 이번 달 " + formatCurrency(analytics.topCategoryAmount) + "을 사용했어요.";
+
+        const riskSentence = "지출 위험도는 " + STATUS_LABELS[analytics.riskStatus] + "입니다. 현재 월 지출 한도 사용률은 " + formatPercent(analytics.budgetUsage) + "예요.";
+        const saveSentence = createSavingTip(analytics);
+        const fixedSentence = "월 고정 지출 예상액은 " + formatCurrency(analytics.profile.fixedExpense) + "이고, 그중 구독 성격의 지출은 " + formatCurrency(analytics.profile.subscriptionTotal) + "이에요.";
+        const dailySentence = analytics.profile.dailyWarningLimit > 0
+          ? "오늘 지출은 " + formatCurrency(analytics.todaySpent) + "이고 하루 기준은 " + formatCurrency(analytics.profile.dailyWarningLimit) + "이에요."
+          : "하루 소비 알림 기준을 설정하면 오늘 지출 위험도를 더 잘 볼 수 있어요.";
+
+        $("analysisReport").innerHTML = [topSentence, riskSentence, saveSentence, fixedSentence, dailySentence].map(function (sentence) {
+          return "<li>" + escapeHtml(sentence) + "</li>";
+        }).join("");
+      }
+
+      function createSavingTip(analytics) {
+        const topCategory = analytics.topCategory;
+        const targetCategory = analytics.profile.targetReduceCategory;
+
+        if (topCategory === targetCategory) return "절약 추천: 줄이고 싶은 소비인 " + targetCategory + " 지출이 가장 높아요. 이번 주에는 한 번만 덜 쓰는 미션을 추천해요.";
+        if (topCategory === "카페") return "절약 추천: 카페 지출이 높아요. 이번 주 하루만 줄여도 지갑이 숨을 쉽니다.";
+        if (topCategory === "배달") return "절약 추천: 배달 횟수를 한 번 줄이고 학식이나 간편식을 섞어보세요.";
+        if (topCategory === "쇼핑") return "절약 추천: 쇼핑은 24시간 보류 후에도 필요할 때 결제하는 방식이 좋아요.";
+        if (topCategory === "편의점") return "절약 추천: 편의점 소액 결제가 반복되면 큰 지출이 되니 묶어서 장보기를 시도해보세요.";
+        if (topCategory === "구독") return "절약 추천: 구독 서비스는 정기적으로 필요한지 확인해보세요.";
+        return "절약 추천: 금액이 큰 결제보다 반복되는 작은 결제를 먼저 살펴보세요.";
+      }
+
+      function renderTransactionTable(analytics) {
+        const sortedTransactions = transactions.slice().sort(function (a, b) {
+          return String(b.date || "").localeCompare(String(a.date || ""));
+        });
+
+        const reviewCount = sortedTransactions.filter(function (transaction) {
+          return transaction.needsReview;
+        }).length;
+
+        $("reviewCountBadge").textContent = "확인 필요 " + reviewCount + "건";
+
+        if (sortedTransactions.length === 0) {
+          $("transactionTableBody").innerHTML = '<tr><td colspan="7" class="empty-state">거래내역이 없어요.</td></tr>';
+          return;
+        }
+
+        $("transactionTableBody").innerHTML = sortedTransactions.map(function (transaction) {
+          const warning = buildTransactionWarning(transaction, analytics);
+          const selectedCategory = CATEGORIES.includes(transaction.category) ? transaction.category : "기타";
+          const options = CATEGORIES.map(function (category) {
+            const selected = category === selectedCategory ? " selected" : "";
+            return '<option value="' + escapeHtml(category) + '"' + selected + '>' + CATEGORY_EMOJI[category] + " " + category + '</option>';
+          }).join("");
+          const reviewBadge = transaction.needsReview ? '<span class="badge review">확인 필요</span>' : "";
+
+          return [
+            "<tr>",
+            "<td>" + escapeHtml(transaction.date || "") + "</td>",
+            '<td class="description-cell">' + escapeHtml(transaction.description || "") + "</td>",
+            '<td class="amount">' + formatCurrency(transaction.amount) + "</td>",
+            '<td><select class="small-select category-select" data-id="' + escapeHtml(transaction.id) + '">' + options + "</select></td>",
+            "<td>" + Math.round(Number(transaction.confidence || 0) * 100) + "% " + reviewBadge + "</td>",
+            '<td class="warning-cell"><span class="badge ' + warning.dangerLevel + '">' + STATUS_LABELS[warning.dangerLevel] + "</span>" + escapeHtml(warning.message) + "</td>",
+            '<td><button class="btn ghost" type="button" data-delete-id="' + escapeHtml(transaction.id) + '">삭제</button></td>',
+            "</tr>"
+          ].join("");
+        }).join("");
+      }
+
+      function updateTransactionWarnings(analytics) {
+        let changed = false;
+
+        transactions.forEach(function (transaction) {
+          const warning = buildTransactionWarning(transaction, analytics);
+          if (transaction.dangerLevel !== warning.dangerLevel || transaction.warningMessage !== warning.message) {
+            transaction.dangerLevel = warning.dangerLevel;
+            transaction.warningMessage = warning.message;
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          saveTransactions();
+        }
+      }
+
+      function buildTransactionWarning(transaction, analytics) {
+        const amount = Number(transaction.amount || 0);
+        const category = transaction.category || "기타";
+        const profileInfo = analytics.profile || getSafeProfile();
+        const threshold = getDangerThreshold();
+        const transactionDate = normalizeDate(transaction.date);
+        const dayTotal = analytics.dailyTotals[transactionDate] || amount;
+        const messages = [];
+        let level = "safe";
+
+        if (analytics.budgetUsage >= 0.8 && amount >= threshold * 0.6) {
+          level = maxDangerLevel(level, "danger");
+          messages.push(createToneMessage("budgetHigh", category));
+        } else if (amount >= threshold) {
+          level = maxDangerLevel(level, "caution");
+          messages.push(createToneMessage("largePayment", category));
+        }
+
+        if (profileInfo.targetReduceCategory === category) {
+          level = maxDangerLevel(level, profileInfo.warningTone === "강하게" ? "danger" : "caution");
+          messages.push(createToneMessage("targetCategory", category));
+        }
+
+        if (profileInfo.dailyWarningLimit > 0 && dayTotal >= profileInfo.dailyWarningLimit) {
+          level = maxDangerLevel(level, "danger");
+          messages.push("오늘 지출이 설정한 하루 기준 " + formatCurrency(profileInfo.dailyWarningLimit) + "을 넘었어요.");
+        }
+
+        if (category === "구독") {
+          level = maxDangerLevel(level, "caution");
+          messages.push("구독 성격의 고정 지출이 매달 빠져나가고 있어요. 등록한 금액은 " + formatCurrency(profileInfo.subscriptionTotal) + "입니다. 실제로 쓰는 서비스인지 점검해보세요.");
+        }
+
+        if (category === "카페" && analytics.categoryTotals["카페"] >= 50000) {
+          level = maxDangerLevel(level, "caution");
+          messages.push(createToneMessage("cafeTotal", category));
+        }
+
+        if (category === "배달" && analytics.categoryTotals["배달"] >= 80000) {
+          level = maxDangerLevel(level, "caution");
+          messages.push("이번 달 배달비가 높아요. 한 끼만 직접 챙겨도 지출 한도 방어에 도움이 돼요.");
+        }
+
+        if (profileInfo.fixedExpense > 0 && amount >= threshold * 0.5) {
+          messages.push("이번 달 고정 지출 예상액 " + formatCurrency(profileInfo.fixedExpense) + "도 고려해두세요.");
+        }
+
+        if (messages.length === 0) {
+          messages.push(createToneMessage("safe", category));
+        }
+
+        return {
+          dangerLevel: level,
+          message: uniqueMessages(messages).join(" ")
+        };
+      }
+
+      function createToneMessage(type, category) {
+        const profileInfo = getSafeProfile();
+        const tone = profileInfo.warningTone || "보통";
+
+        const messages = {
+          impulse: {
+            "부드럽게": "충동구매처럼 느껴진다면 잠깐만 미뤄봐도 괜찮아요. 내일 다시 보면 마음이 더 선명해질 거예요.",
+            "보통": "필요도가 ‘충동구매 같음’이라면 24시간 뒤 다시 고민해보세요.",
+            "강하게": "충동구매 가능성이 커요. 지금 결제하지 말고 24시간 보류하세요."
+          },
+          budgetHigh: {
+            "부드럽게": "월 지출 한도의 80%를 넘고 있어요. 조금만 더 고민해보면 좋아요.",
+            "보통": "월 지출 한도의 80%를 넘고 있어요. 꼭 필요한 소비인지 확인해보세요.",
+            "강하게": "월 지출 한도의 80%를 넘었습니다. 지금 지출 상태에서는 이 소비를 미루는 게 좋습니다."
+          },
+          largePayment: {
+            "부드럽게": "큰 금액의 결제예요. 급하지 않다면 조금 더 비교해봐도 좋아요.",
+            "보통": "큰 금액의 결제예요. 충동구매인지 확인해보세요.",
+            "강하게": "큰 결제입니다. 지출 한도를 흔들 수 있으니 필요성이 확실할 때만 진행하세요."
+          },
+          targetCategory: {
+            "부드럽게": "줄이고 싶은 카테고리로 설정한 " + category + " 지출이에요. 조금만 더 고민해보면 좋아요.",
+            "보통": "줄이고 싶은 카테고리로 설정한 " + category + " 지출이에요. 필요한 소비인지 확인해보세요.",
+            "강하게": "줄이고 싶은 카테고리로 설정한 " + category + " 지출입니다. 지금 지출 상태에서는 이 소비를 미루는 게 좋습니다."
+          },
+          cafeTotal: {
+            "부드럽게": "이번 달 카페 지출이 꽤 쌓였어요. 하루만 쉬어도 지출 한도에 여유가 생겨요.",
+            "보통": "이번 달 카페 지출이 꽤 높아요. 하루만 참아도 지갑이 숨을 쉽니다.",
+            "강하게": "카페 지출이 이미 높습니다. 이번 주 추가 카페 결제는 줄이세요."
+          },
+          safe: {
+            "부드럽게": "아직은 괜찮아요. 다만 반복되는 소비는 천천히 살펴봐요.",
+            "보통": "월 지출 한도는 아직 안전하지만, 반복되면 위험해질 수 있어요.",
+            "강하게": "현재는 안전하지만 같은 소비가 반복되면 지출 한도를 빠르게 소모합니다."
+          }
+        };
+
+        return (messages[type] && messages[type][tone]) || (messages[type] && messages[type]["보통"]) || "";
+      }
+
+      function getTodaySpent(analytics) {
+        const dateKey = todayISO();
+        return Number((analytics && analytics.dailyTotals && analytics.dailyTotals[dateKey]) || 0);
+      }
+
+      function maxDangerLevel(current, next) {
+        const order = { safe: 0, caution: 1, danger: 2 };
+        return order[next] > order[current] ? next : current;
+      }
+
+      function getRiskStatus(budgetUsage) {
+        if (budgetUsage >= 0.9) return "danger";
+        if (budgetUsage >= 0.7) return "caution";
+        return "safe";
+      }
+
+      function getRiskStatusDescription(status) {
+        if (status === "danger") return "90% 이상";
+        if (status === "caution") return "70% 이상 90% 미만";
+        return "70% 미만";
+      }
+
+      function getStatusColor(status) {
+        if (status === "danger") return "var(--red)";
+        if (status === "caution") return "var(--amber)";
+        return "var(--mint)";
+      }
+
+      function getDangerThreshold() {
+        return Number((profile && profile.dangerThreshold) || 50000);
+      }
+
+      function applySavedTheme() {
+        const savedTheme = profile && profile.theme ? profile.theme : readStorageItem(STORAGE_KEYS.theme, "light");
+        setTheme(savedTheme === "dark" ? "dark" : "light", false);
+      }
+
+      function toggleTheme() {
+        const nextTheme = getCurrentTheme() === "dark" ? "light" : "dark";
+        setTheme(nextTheme, true);
+      }
+
+      function setTheme(theme, persist) {
+        const safeTheme = theme === "dark" ? "dark" : "light";
+        document.body.dataset.theme = safeTheme;
+        updateThemeToggleLabel();
+
+        if (persist !== false) {
+          writeStorageItem(STORAGE_KEYS.theme, safeTheme);
+          if (profile) {
+            profile.theme = safeTheme;
+            profile.updatedAt = new Date().toISOString();
+            saveProfile();
+          }
+        }
+      }
+
+      function getCurrentTheme() {
+        return document.body.dataset.theme === "dark" ? "dark" : "light";
+      }
+
+      function updateThemeToggleLabel() {
+        ["themeToggleBtn", "onboardingThemeToggleBtn"].forEach(function (buttonId) {
+          const button = $(buttonId);
+          if (button) {
+            button.textContent = getCurrentTheme() === "dark" ? "☀️ 라이트모드" : "🌙 다크모드";
+          }
+        });
+
+        const wizardThemeButton = $("wizardThemeToggleBtn");
+        if (wizardThemeButton) {
+          const isDark = getCurrentTheme() === "dark";
+          wizardThemeButton.textContent = isDark ? "☀️" : "🌙";
+          wizardThemeButton.setAttribute("aria-label", isDark ? "라이트모드로 전환" : "다크모드로 전환");
+          wizardThemeButton.setAttribute("title", isDark ? "라이트모드로 전환" : "다크모드로 전환");
+        }
+      }
+
+      function isCurrentMonthTransaction(transaction) {
+        const date = parseDate(transaction.date);
+        if (!date) return true;
+
+        const now = new Date();
+        return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
+      }
+
+      function getDefaultNextPayday() {
+        const today = new Date(todayISO() + "T00:00:00");
+        const target = new Date(today.getFullYear(), today.getMonth(), 25);
+        if (target < today) target.setMonth(target.getMonth() + 1);
+        return target.toISOString().slice(0, 10);
+      }
+
+      function createEmptyProfile() {
+        const now = new Date().toISOString();
+
+        return {
+          name: "대원",
+          studentType: "대학생",
+          mainPurpose: "생활비 관리",
+          monthlyAvailableMoney: 0,
+          monthlySpendingLimit: 0,
+          currentMoney: 0,
+          dangerThreshold: 50000,
+          fixedExpense: 0,
+          fixedExpenseItems: [],
+          subscriptions: [],
+          customSubscription: "",
+          subscriptionTotal: 0,
+          targetReduceCategory: "카페",
+          warningTone: "보통",
+          dailyWarningLimit: 30000,
+          payday: "",
+          theme: "light",
+          isSample: false,
+          createdAt: now,
+          updatedAt: now
+        };
+      }
+
+      function createNewProfileDraft() {
+        return Object.assign(createEmptyProfile(), {
+          name: "",
+          monthlyAvailableMoney: 0,
+          monthlySpendingLimit: 0,
+          currentMoney: 0,
+          fixedExpense: 0,
+          fixedExpenseItems: [],
+          subscriptionTotal: 0
+        });
+      }
+
+      function migrateProfile(rawProfile) {
+        const defaults = createEmptyProfile();
+        const source = rawProfile && typeof rawProfile === "object" ? rawProfile : {};
+        const migrated = Object.assign({}, defaults, source);
+
+        migrated.name = String(migrated.name || defaults.name);
+        migrated.studentType = normalizeChoice(migrated.studentType, ["대학생", "대학원생", "취업준비생", "기타"], defaults.studentType);
+        migrated.mainPurpose = normalizeChoice(migrated.mainPurpose, ["생활비 관리", "소비 습관 분석", "충동구매 방지", "구독/고정지출 점검"], defaults.mainPurpose);
+        migrated.monthlyAvailableMoney = parsePositiveNumber(migrated.monthlyAvailableMoney || migrated.monthlyIncome || 0);
+        migrated.monthlySpendingLimit = parsePositiveNumber(migrated.monthlySpendingLimit || migrated.monthlyBudget || 0);
+        migrated.currentMoney = parsePositiveNumber(migrated.currentMoney || 0);
+        migrated.dangerThreshold = parsePositiveNumber(migrated.dangerThreshold || defaults.dangerThreshold);
+        migrated.fixedExpense = parsePositiveNumber(migrated.fixedExpense || 0);
+        migrated.fixedExpenseItems = normalizeFixedExpenseItems(migrated.fixedExpenseItems || []);
+        if (migrated.fixedExpenseItems.length === 0 && Array.isArray(migrated.subscriptions) && migrated.subscriptions.length > 0 && parsePositiveNumber(migrated.subscriptionTotal || 0) > 0) {
+          migrated.fixedExpenseItems = [{
+            name: "구독 묶음",
+            amount: parsePositiveNumber(migrated.subscriptionTotal),
+            type: "subscription",
+            custom: false
+          }];
+        }
+        migrated.subscriptions = Array.isArray(migrated.subscriptions) ? migrated.subscriptions.map(String) : [];
+        migrated.customSubscription = String(migrated.customSubscription || "");
+        migrated.subscriptionTotal = parsePositiveNumber(migrated.subscriptionTotal || 0);
+        migrated.targetReduceCategory = normalizeChoice(migrated.targetReduceCategory, ["카페", "배달", "쇼핑", "편의점", "교통", "구독", "기타"], defaults.targetReduceCategory);
+        migrated.warningTone = normalizeChoice(migrated.warningTone, ["부드럽게", "보통", "강하게"], defaults.warningTone);
+        migrated.dailyWarningLimit = parsePositiveNumber(migrated.dailyWarningLimit || defaults.dailyWarningLimit);
+        migrated.payday = typeof migrated.payday === "string" ? migrated.payday : "";
+        migrated.theme = normalizeChoice(migrated.theme || readStorageItem(STORAGE_KEYS.theme, "light"), ["light", "dark"], defaults.theme);
+        migrated.isSample = Boolean(migrated.isSample);
+        migrated.createdAt = migrated.createdAt || defaults.createdAt;
+        migrated.updatedAt = migrated.updatedAt || defaults.updatedAt;
+
+        delete migrated.monthlyIncome;
+        delete migrated.monthlyBudget;
+        delete migrated.incomeDay;
+        delete migrated.goalName;
+        delete migrated.goalAmount;
+        delete migrated.savedAmount;
+        delete migrated.goalDate;
+        delete migrated.goalImportance;
+        delete migrated.fixedExpenseAlert;
+        delete migrated.spendingStyle;
+        delete migrated.missionEnabled;
+
+        return migrated;
+      }
+
+      function normalizeChoice(value, allowedValues, fallback) {
+        return allowedValues.includes(value) ? value : fallback;
+      }
+
+      function parseDate(value) {
+        const dateText = normalizeDate(value);
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateText);
+        if (!match) return null;
+
+        const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+
+      function normalizeDate(value) {
+        const text = String(value || "").trim();
+        const now = new Date();
+
+        if (!text) return todayISO();
+
+        const compact = text.replace(/[^\d]/g, "");
+        if (compact.length >= 8) {
+          const year = Number(compact.slice(0, 4));
+          const month = Number(compact.slice(4, 6));
+          const day = Number(compact.slice(6, 8));
+          const parsedCompact = makeValidDate(year, month, day);
+          if (parsedCompact) return toISODate(parsedCompact);
+        }
+
+        const separated = text.match(/(\d{4})[.\-/년\s]+(\d{1,2})[.\-/월\s]+(\d{1,2})/);
+        if (separated) {
+          const parsedSeparated = makeValidDate(Number(separated[1]), Number(separated[2]), Number(separated[3]));
+          if (parsedSeparated) return toISODate(parsedSeparated);
+        }
+
+        const shortDate = text.match(/(\d{1,2})[.\-/월\s]+(\d{1,2})/);
+        if (shortDate) {
+          const parsedShort = makeValidDate(now.getFullYear(), Number(shortDate[1]), Number(shortDate[2]));
+          if (parsedShort) return toISODate(parsedShort);
+        }
+
+        const fallback = new Date(text);
+        if (!Number.isNaN(fallback.getTime())) {
+          return toISODate(fallback);
+        }
+
+        return todayISO();
+      }
+
+      function makeValidDate(year, month, day) {
+        const date = new Date(year, month - 1, day);
+        if (
+          date.getFullYear() === year &&
+          date.getMonth() === month - 1 &&
+          date.getDate() === day
+        ) {
+          return date;
+        }
+        return null;
+      }
+
+      function daysAgo(days) {
+        const date = new Date();
+        date.setDate(Math.max(1, date.getDate() - days));
+        return toISODate(date);
+      }
+
+      function todayISO() {
+        return toISODate(new Date());
+      }
+
+      function toISODate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return year + "-" + month + "-" + day;
+      }
+
+      function parseMoney(value) {
+        const text = String(value || "").trim();
+        if (!text) return NaN;
+
+        const negative = text.includes("-") || /^\(.*\)$/.test(text);
+        const cleaned = text.replace(/[^\d.-]/g, "").replace(/(?!^)-/g, "");
+        const number = Number(cleaned);
+
+        if (!Number.isFinite(number)) return NaN;
+        return negative ? -Math.abs(number) : number;
+      }
+
+      function parsePositiveNumber(value) {
+        const number = Number(String(value || "").replace(/[^\d.-]/g, ""));
+        if (!Number.isFinite(number)) return 0;
+        return Math.max(0, Math.round(number));
+      }
+
+      function cssEscape(value) {
+        if (window.CSS && typeof window.CSS.escape === "function") {
+          return window.CSS.escape(String(value || ""));
+        }
+
+        return String(value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+      }
+
+      function formatCurrency(value) {
+        const number = Math.round(Number(value || 0));
+        return number.toLocaleString("ko-KR") + "원";
+      }
+
+      function formatPercent(value) {
+        return Math.round(Number(value || 0) * 100) + "%";
+      }
+
+      function clampPercent(value) {
+        return Math.max(0, Math.min(100, Number(value) || 0));
+      }
+
+      function uniqueMessages(messages) {
+        return Array.from(new Set(messages.filter(Boolean)));
+      }
+
+      function createId() {
+        if (window.crypto && window.crypto.randomUUID) {
+          return window.crypto.randomUUID();
+        }
+        return "tx-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+      }
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function showToast(message) {
+        const toast = $("toast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () {
+          toast.classList.remove("show");
+        }, 2600);
+      }
+
+      function loadProfile() {
+        const storedProfile = readStorageItem(STORAGE_KEYS.profile, null);
+        if (!storedProfile) return null;
+
+        const migratedProfile = migrateProfile(storedProfile);
+        writeStorageItem(STORAGE_KEYS.profile, migratedProfile);
+        return migratedProfile;
+      }
+
+      function saveProfile() {
+        if (profile && profile.theme) {
+          writeStorageItem(STORAGE_KEYS.theme, profile.theme);
+        }
+        writeStorageItem(STORAGE_KEYS.profile, profile);
+      }
+
+      function loadTransactions() {
+        const stored = readStorageItem(STORAGE_KEYS.transactions, []);
+        if (!Array.isArray(stored)) return [];
+
+        return stored.map(function (transaction) {
+          const normalizedTransaction = Object.assign({}, transaction);
+          normalizedTransaction.id = normalizedTransaction.id || createId();
+          normalizedTransaction.date = normalizeDate(normalizedTransaction.date);
+          normalizedTransaction.description = String(normalizedTransaction.description || "거래내용 없음");
+          normalizedTransaction.amount = Math.abs(Number(normalizedTransaction.amount || 0));
+          normalizedTransaction.category = CATEGORIES.includes(normalizedTransaction.category) ? normalizedTransaction.category : "기타";
+          normalizedTransaction.confidence = Number.isFinite(Number(normalizedTransaction.confidence)) ? Number(normalizedTransaction.confidence) : 0.2;
+          normalizedTransaction.needsReview = Boolean(normalizedTransaction.needsReview);
+          normalizedTransaction.dangerLevel = normalizedTransaction.dangerLevel || "safe";
+          normalizedTransaction.warningMessage = normalizedTransaction.warningMessage || "";
+          return normalizedTransaction;
+        }).filter(function (transaction) {
+          return transaction.amount > 0;
+        });
+      }
+
+      function saveTransactions() {
+        writeStorageItem(STORAGE_KEYS.transactions, transactions);
+      }
+
+      function loadLearningData() {
+        const stored = readStorageItem(STORAGE_KEYS.learning, {});
+        return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+      }
+
+      function saveLearningData() {
+        writeStorageItem(STORAGE_KEYS.learning, learningData);
+      }
+
+      function readStorageItem(key, fallback) {
+        try {
+          const raw = window.localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (error) {
+          return fallback;
+        }
+      }
+
+      function writeStorageItem(key, value) {
+        try {
+          window.localStorage.setItem(key, JSON.stringify(value));
+        } catch (error) {
+          showToast("브라우저 저장소에 저장하지 못했어요.");
+        }
+      }
+
+      function removeStorageItem(key) {
+        try {
+          window.localStorage.removeItem(key);
+        } catch (error) {
+          showToast("브라우저 저장소를 수정하지 못했어요.");
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
